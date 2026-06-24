@@ -118,6 +118,10 @@ export default function Report({ report, onRefresh }) {
               <div className={styles.statLabel}>基金总值</div>
             </div>
             <div className={styles.statCard}>
+              <div className={styles.statValue}>¥{(report.data.summary.total_stock_value_cny || 0).toLocaleString()}</div>
+              <div className={styles.statLabel}>股票总值</div>
+            </div>
+            <div className={styles.statCard}>
               <div className={styles.statValue}>${(report.data.summary.total_crypto_value_usd || 0).toLocaleString()}</div>
               <div className={styles.statLabel}>加密货币总值</div>
             </div>

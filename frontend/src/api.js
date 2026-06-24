@@ -1,16 +1,17 @@
 export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 // 带超时和重试的 fetch（冷启动时第一次请求可能失败）
-// 仅对 GET 请求重试，避免 POST 产生重复副作用
+// GET 请求自动重试；POST 请求仅在 opts.retryable === true 时重试
 async function fetchWithTimeout(url, opts = {}, timeoutMs = 90000) {
-  const isGet = !opts.method || opts.method.toUpperCase() === 'GET'
-  const maxAttempts = isGet ? 2 : 1
+  const { retryable, ...fetchOpts } = opts
+  const canRetry = retryable || !fetchOpts.method || fetchOpts.method.toUpperCase() === 'GET'
+  const maxAttempts = canRetry ? 2 : 1
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), timeoutMs)
     try {
-      const res = await fetch(url, { ...opts, signal: controller.signal })
+      const res = await fetch(url, { ...fetchOpts, signal: controller.signal })
       clearTimeout(timer)
       if (!res.ok) {
         const text = await res.text().catch(() => '')
@@ -20,7 +21,6 @@ async function fetchWithTimeout(url, opts = {}, timeoutMs = 90000) {
       return res.json()
     } catch (e) {
       clearTimeout(timer)
-      // 网络错误或超时时重试一次（GET 请求，可能是冷启动）
       const isRetryable = e.name === 'AbortError' || e instanceof TypeError
       if (attempt < maxAttempts - 1 && isRetryable) {
         await new Promise(r => setTimeout(r, 2000))
@@ -49,6 +49,7 @@ export async function analyzePortfolio(portfolio) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(portfolio),
+    retryable: true,
   })
 }
 
@@ -61,6 +62,7 @@ export async function generateReport(portfolio, existingAnalysis = null) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    retryable: true,
   }, 240000)
 }
 
@@ -69,6 +71,7 @@ export async function explainConcept(concept) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ concept }),
+    retryable: true,
   }, 240000)
 }
 
@@ -81,6 +84,7 @@ export async function verifyClaims(content) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content }),
+    retryable: true,
   }, 240000)
 }
 
@@ -89,6 +93,7 @@ export async function analyzeSupplyChain(material, context = '') {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ material, context }),
+    retryable: true,
   }, 240000)
 }
 
