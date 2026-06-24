@@ -5,7 +5,6 @@
 一个面向投资新手的中文理财助手，帮你追踪基金、A 股、加密货币持仓，用 AI 分析投资健康度，还能验真传言、分析产业链。
 
 **🔗 前端：** [moneyhealth.pages.dev](https://moneyhealth.pages.dev)  
-**🔗 后端 API：** [moneyhealth.fly.dev](https://moneyhealth.fly.dev)
 
 ---
 

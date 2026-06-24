@@ -598,6 +598,49 @@ const Q = [
     ],
     key: 'willing_to_pay',
   },
+
+  // ── 附录 · Demo 反馈 ──
+  {
+    scene: '附录 · Demo 体验',
+    q: '刚才体验的 demo，你觉得哪个功能最有用？',
+    hint: '刚才玩过的功能里选',
+    opts: [
+      { main: '📊 数据看板', sub: '一眼看清持仓全貌' },
+      { main: '🏥 AI 健康报告', sub: '给持仓做个全面体检' },
+      { main: '🔍 谣言验真', sub: '帮你分辨投资小道消息' },
+      { main: '🔗 产业链分析', sub: '看清一个行业的上下游' },
+    ],
+    key: 'demo_best_feature',
+  },
+  {
+    scene: '附录 · Demo 体验',
+    q: '用 demo 的过程中，有没有让你觉得"这也太麻烦了"的地方？',
+    opts: [
+      { main: '录入持仓太麻烦了', sub: '一个一个输代码和金额，好累' },
+      { main: '页面加载有点慢', sub: '等得有点不耐烦' },
+      { main: '功能太多找不到重点', sub: '不知道该先看哪个' },
+      { main: '没有，挺顺的', sub: '体验流畅，没啥卡壳' },
+    ],
+    key: 'demo_pain_point',
+  },
+  {
+    scene: '附录 · Demo 体验',
+    q: '如果这个工具明天正式上线，你会？',
+    opts: [
+      { main: '马上注册，开始用', sub: '终于等到了' },
+      { main: '先观望，看看别人怎么说', sub: '不急，让子弹飞一会儿' },
+      { main: '推荐给朋友', sub: '好东西要分享' },
+      { main: '暂时不需要', sub: '我有自己的方式管钱' },
+    ],
+    key: 'demo_launch_reaction',
+  },
+  {
+    scene: '附录 · Demo 体验',
+    q: '对这个 demo，你最想吐槽或夸一句什么？',
+    type: 'text',
+    placeholder: '随便说，越真实越好……',
+    key: 'demo_feedback_text',
+  },
 ];
 
 let cur = 0;
