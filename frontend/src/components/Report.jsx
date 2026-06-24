@@ -96,9 +96,7 @@ export default function Report({ report, onRefresh }) {
           {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} title="重新生成报告">↻</button>}
         </div>
         <div className={styles.reportArea}>
-          <MarkdownBoundary>
-            <ReactMarkdown components={markdownComponents}>{reportText}</ReactMarkdown>
-          </MarkdownBoundary>
+          <div dangerouslySetInnerHTML={{ __html: reportText.replace(/\n/g, '<br/>') }} />
         </div>
         {activeTerm && (
           <TermExplainer

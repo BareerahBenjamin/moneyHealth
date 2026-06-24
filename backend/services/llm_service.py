@@ -13,11 +13,14 @@ from services.fund_service import get_fund_info, search_fund
 
 load_dotenv()
 
+MODEL = os.getenv("LLM_MODEL", "gpt-4o")
+FAST_MODEL = "gpt-4o"  # 用于长任务（产业链、验真）
+
 def get_client():
     return OpenAI(
         base_url=os.getenv("LLM_BASE_URL", "https://api.vectorengine.ai/v1"),
         api_key=os.getenv("LLM_API_KEY", "placeholder"),
-        timeout=60.0,
+        timeout=300.0,
     )
 
 SYSTEM_PROMPT = """你是一位专业但亲切的理财翻译官，专门把复杂的投资数据用人话解释给投资小白听。
@@ -60,7 +63,7 @@ def generate_health_report(portfolio_summary: str, market_data: str) -> str:
     
     try:
         response = client.chat.completions.create(
-            model="gpt-5-codex",
+            model=MODEL,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt}
@@ -75,10 +78,10 @@ def generate_health_report(portfolio_summary: str, market_data: str) -> str:
 def explain_concept(concept: str) -> str:
     """解释投资概念"""
     client = get_client()
-    
+
     try:
         response = client.chat.completions.create(
-            model="gpt-5-codex",
+            model=FAST_MODEL,
             messages=[
                 {"role": "system", "content": "你是一位耐心的投资老师，专门给完全不懂金融的人解释概念。用最简单的话，举生活中的例子，不超过100字。全程不要使用任何 emoji 或表情符号。"},
                 {"role": "user", "content": f"请用大白话解释：{concept}"}
@@ -175,7 +178,7 @@ def _extract_entities(client, content: str) -> list:
     """让 LLM 抽出文中可查行情的标的。失败返回空列表，不影响验真主流程。"""
     try:
         response = client.chat.completions.create(
-            model="gpt-5-codex",
+            model=FAST_MODEL,
             messages=[
                 {"role": "system", "content": ENTITY_EXTRACT_PROMPT},
                 {"role": "user", "content": content},
@@ -317,12 +320,12 @@ def verify_claims(content: str) -> dict:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-5-codex",
+            model=FAST_MODEL,
             messages=[
                 {"role": "system", "content": VERIFY_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=2000,
+            max_tokens=1500,
             temperature=0.3,
         )
         raw = response.choices[0].message.content
@@ -421,12 +424,12 @@ def analyze_supply_chain(material: str, context: str = "") -> dict:
 
     try:
         response = client.chat.completions.create(
-            model="gpt-5-codex",
+            model=FAST_MODEL,
             messages=[
                 {"role": "system", "content": SUPPLY_CHAIN_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=2800,
+            max_tokens=2000,
             temperature=0.4,
         )
         raw = response.choices[0].message.content

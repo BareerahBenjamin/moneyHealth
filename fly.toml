@@ -9,7 +9,7 @@ primary_region = "ams"
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  response_timeout = 120
+  response_timeout = 300
 
 [[mounts]]
   source = "data"
@@ -17,3 +17,4 @@ primary_region = "ams"
 
 [env]
   DATA_DIR = "/data"
+  LLM_MODEL = "gpt-4o"

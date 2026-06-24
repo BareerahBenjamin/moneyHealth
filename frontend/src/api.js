@@ -49,7 +49,7 @@ export async function generateReport(portfolio, existingAnalysis = null) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-  }, 120000)
+  }, 240000)
 }
 
 export async function explainConcept(concept) {
@@ -57,7 +57,7 @@ export async function explainConcept(concept) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ concept }),
-  }, 120000)
+  }, 240000)
 }
 
 export async function getCryptoHistory(symbol, days = 30) {
@@ -69,7 +69,7 @@ export async function verifyClaims(content) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content }),
-  }, 120000)
+  }, 240000)
 }
 
 export async function analyzeSupplyChain(material, context = '') {
@@ -77,7 +77,7 @@ export async function analyzeSupplyChain(material, context = '') {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ material, context }),
-  }, 120000)
+  }, 240000)
 }
 
 export async function getStockInfo(stockCode) {
