@@ -3,6 +3,20 @@ import akshare as ak
 import warnings
 warnings.filterwarnings('ignore')
 
+# 基金名称缓存（模块级，只加载一次）
+_fund_name_cache: dict[str, str] = {}
+
+def _get_fund_name(code: str) -> str:
+    """从 akshare 基金目录获取真实基金名称"""
+    global _fund_name_cache
+    if not _fund_name_cache:
+        try:
+            df = ak.fund_name_em()
+            _fund_name_cache = dict(zip(df['基金代码'], df['基金简称']))
+        except Exception:
+            pass
+    return _fund_name_cache.get(code, f"基金{code}")
+
 def get_fund_info(fund_code: str) -> dict:
     """获取基金基础信息和近期净值"""
     try:
@@ -31,7 +45,7 @@ def get_fund_info(fund_code: str) -> dict:
         
         return {
             "code": fund_code,
-            "name": f"基金{fund_code}",  # 后续可以补充基金名称
+            "name": _get_fund_name(fund_code),
             "latest_nav": float(latest['单位净值']),
             "latest_date": str(latest['净值日期']),
             "daily_change": float(latest['日增长率']),

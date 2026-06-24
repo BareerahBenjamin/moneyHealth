@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>投资人格结果 — 我的钱还好吗</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a1a; --surface: #12122a; --card: #1a1a3e;
+      --accent: #ffd700; --accent2: #ff4757; --accent3: #7bed9f; --accent4: #70a1ff;
+      --text: #f0f0f0; --text-muted: #8888aa; --radius: 20px;
+    }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 2rem; position: relative; overflow: hidden;
+    }
+    .stars { position: fixed; inset: 0; pointer-events: none; }
+    .star { position: absolute; width: 2px; height: 2px; background: white; border-radius: 50%; animation: twinkle ease-in-out infinite alternate; }
+    @keyframes twinkle { from { opacity: 0.1; } to { opacity: 0.8; } }
+    .card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 2.5rem 2rem; max-width: 520px; width: 100%;
+      text-align: center; border: 1px solid rgba(255,215,0,0.15);
+      position: relative; z-index: 1;
+    }
+    .badge {
+      width: 120px; height: 120px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 60px;
+      animation: pop-in 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    @keyframes pop-in { 0% { transform: scale(0) rotate(-30deg); } 100% { transform: scale(1) rotate(0deg); } }
+    .type-name { font-size: 2rem; font-weight: 900; margin-bottom: 0.3rem; }
+    .type-title { font-size: 1.1rem; color: var(--accent); margin-bottom: 1.2rem; }
+    .type-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+    .tag { padding: 0.35rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .meter { margin: 1.2rem 0; }
+    .meter-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .meter-bar { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .meter-fill { height: 100%; border-radius: 5px; transition: width 1.5s cubic-bezier(0.22,1,0.36,1); width: 0%; }
+    .divider { height: 1px; background: rgba(255,255,255,0.06); margin: 1.5rem 0; }
+    .cta-text { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .btn-primary {
+      display: inline-block; padding: 0.9rem 2.5rem;
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #1a1a00; font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 50px; cursor: pointer;
+      text-decoration: none; transition: all 0.3s; font-family: inherit;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 25px rgba(255,215,0,0.3); }
+    .loading { text-align: center; color: var(--text-muted); }
+    .loading-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin: 0 3px; animation: ld-bounce 0.6s ease-in-out infinite alternate; }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes ld-bounce { to { transform: translateY(-10px); opacity: 0.3; } }
+    .rain-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+    .rain-drop { position: absolute; top: -50px; font-size: 28px; animation: rain-fall linear forwards; }
+    @keyframes rain-fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+  </style>
+</head>
+<body>
+  <div class="stars" id="stars"></div>
+  <div class="rain-wrap" id="rain"></div>
+  <div class="card" id="card">
+    <div class="loading">
+      <div><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+      <p style="margin-top:1rem">正在解读投资人格…</p>
+    </div>
+  </div>
+
+<script>
+// stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*100+'%';
+  s.style.animationDuration = (1.5+Math.random()*3)+'s';
+  s.style.animationDelay = Math.random()*3+'s';
+  starsEl.appendChild(s);
+}
+
+const PERSONALITY_MAP = {
+  '佛系躺平型': {
+    emoji: '🧘', title: '买入即忘，岁月静好',
+    bg: 'radial-gradient(circle, rgba(123,237,159,0.3), transparent 70%)',
+    desc: '你对投资的态度是"买了就别看了"。涨了开心，跌了也还好。你最大的优势是心态稳，最大的风险是可能错过止损时机。',
+    tags: [['低频操作','rgba(123,237,159,0.2)','var(--accent3)'],['心态王者','rgba(255,215,0,0.2)','var(--accent)'],['需要提醒','rgba(255,71,87,0.2)','var(--accent2)']],
+    risk: 25, learn: 30, leek: 20,
+  },
+  '知识焦虑型': {
+    emoji: '📚', title: '收藏从未停止，行动从未开始',
+    bg: 'radial-gradient(circle, rgba(112,161,255,0.3), transparent 70%)',
+    desc: '你手机里存了 200 篇投资文章，关注了 50 个财经博主，但实际操作经验约等于零。你需要的不是更多知识，而是一个"现在就开始"的推力。',
+    tags: [['信息囤积症','rgba(112,161,255,0.2)','var(--accent4)'],['完美主义','rgba(255,215,0,0.2)','var(--accent)'],['潜力股','rgba(123,237,159,0.2)','var(--accent3)']],
+    risk: 30, learn: 85, leek: 25,
+  },
+  '追涨杀跌型': {
+    emoji: '🎢', title: '哪里热闹去哪里，一买就跌一卖就涨',
+    bg: 'radial-gradient(circle, rgba(255,71,87,0.3), transparent 70%)',
+    desc: '你的投资决策主要靠"感觉"和"消息"。涨的时候追进去，跌的时候割出来——然后它就涨回去了。你需要一个冷静的系统帮你管住手。',
+    tags: [['FOMO患者','rgba(255,71,87,0.2)','var(--accent2)'],['情绪驱动','rgba(255,215,0,0.2)','var(--accent)'],['急需风控','rgba(112,161,255,0.2)','var(--accent4)']],
+    risk: 82, learn: 40, leek: 82,
+  },
+  '理性研究型': {
+    emoji: '🔬', title: '先调研再下手，数据说话',
+    bg: 'radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%)',
+    desc: '你做事有章法，看数据、读报告、算估值。你最需要的是一个好用的工具帮你把散落的研究整合起来，以及偶尔有人提醒你别过度分析。',
+    tags: [['逻辑派','rgba(255,215,0,0.2)','var(--accent)'],['数据控','rgba(112,161,255,0.2)','var(--accent4)'],['偶尔纠结','rgba(123,237,159,0.2)','var(--accent3)']],
+    risk: 45, learn: 75, leek: 12,
+  },
+  '社交跟风型': {
+    emoji: '👥', title: '朋友说好就是好，群友推荐就是宝',
+    bg: 'radial-gradient(circle, rgba(160,120,255,0.3), transparent 70%)',
+    desc: '你的投资决策大多来自社交圈——朋友推荐、群友晒单、大V喊单。人脉是你的信息源，但也可能是你的风险源。学会独立判断是你进阶的关键。',
+    tags: [['人脉投资','rgba(160,120,255,0.2)','#a078ff'],['信任驱动','rgba(255,215,0,0.2)','var(--accent)'],['需要验证','rgba(255,71,87,0.2)','var(--accent2)']],
+    risk: 55, learn: 45, leek: 62,
+  },
+};
+
+async function load() {
+  const id = location.pathname.split('/').pop();
+  try {
+    const resp = await fetch(`/api/survey/${id}`);
+    if (!resp.ok) throw new Error('not found');
+    const data = await resp.json();
+    const name = data.personality.name;
+    const type = PERSONALITY_MAP[name] || PERSONALITY_MAP['佛系躺平型'];
+
+    document.title = `我是${name} — 我的钱还好吗`;
+
+    const card = document.getElementById('card');
+    card.innerHTML = `
+      <div class="badge" style="background:${type.bg}">${type.emoji}</div>
+      <div class="type-name">${name}</div>
+      <div class="type-title">${type.title}</div>
+      <div class="type-desc">${type.desc}</div>
+      <div class="tags">${type.tags.map(t => `<span class="tag" style="background:${t[1]};color:${t[2]}">${t[0]}</span>`).join('')}</div>
+      <div class="meter">
+        <div class="meter-label"><span>风险偏好</span><span>${type.risk}/100</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="riskFill" style="background:linear-gradient(90deg,var(--accent3),var(--accent))"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>学习意愿</span><span>${type.learn}/100</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="learnFill" style="background:linear-gradient(90deg,var(--accent4),var(--accent2))"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>韭菜指数</span><span>${type.leek}/100</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="leekFill" style="background:linear-gradient(90deg,var(--accent3),var(--accent2))"></div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="cta-text">你是哪种投资人？来测一测 👇</div>
+      <a class="btn-primary" href="/">开始测试 →</a>
+    `;
+
+    setTimeout(() => {
+      document.getElementById('riskFill').style.width = type.risk + '%';
+      document.getElementById('learnFill').style.width = type.learn + '%';
+      document.getElementById('leekFill').style.width = type.leek + '%';
+    }, 300);
+
+    // rain
+    const rain = document.getElementById('rain');
+    const emojis = ['💰','🪙','💵','💎','✨','🎉','🤑'];
+    for (let i = 0; i < 30; i++) {
+      const d = document.createElement('div');
+      d.className = 'rain-drop';
+      d.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      d.style.left = Math.random()*100+'%';
+      d.style.animationDuration = (2+Math.random()*3)+'s';
+      d.style.animationDelay = Math.random()*2+'s';
+      rain.appendChild(d);
+    }
+    setTimeout(() => rain.innerHTML = '', 6000);
+
+  } catch (e) {
+    document.getElementById('card').innerHTML = `
+      <div style="font-size:60px;margin-bottom:1rem">🤔</div>
+      <div class="type-name">找不到这条结果</div>
+      <div class="type-desc">可能链接有误，或者结果已过期</div>
+      <div style="margin-top:1.5rem"><a class="btn-primary" href="/">去测一测 →</a></div>
+    `;
+  }
+}
+load();
+</script>
+</body>
+</html>

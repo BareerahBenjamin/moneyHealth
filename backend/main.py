@@ -180,7 +180,7 @@ def api_generate_report(portfolio: PortfolioRequest):
     for f in analysis["funds"]:
         if "error" not in f:
             fund_lines.append(
-                f"- 基金{f['code']}：持有{f['holding_amount']}元，"
+                f"- {f['name']}（{f['code']}）：持有{f['holding_amount']}元，"
                 f"最新净值{f['latest_nav']}，近30天收益{f.get('period_return_30d', 'N/A')}%，"
                 f"波动率{f.get('volatility_30d', 'N/A')}%"
             )

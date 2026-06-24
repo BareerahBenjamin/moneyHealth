@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>你是哪种投资人？ — 我的钱还好吗</title>
+  <meta name="description" content="10 个灵魂拷问，测出你的投资人格">
+  <meta property="og:title" content="你是哪种投资人？">
+  <meta property="og:description" content="10 个灵魂拷问，测出你的投资人格 🧠">
+  <meta property="og:type" content="website">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a1a;
+      --surface: #12122a;
+      --card: #1a1a3e;
+      --accent: #ffd700;
+      --accent2: #ff4757;
+      --accent3: #7bed9f;
+      --accent4: #70a1ff;
+      --text: #f0f0f0;
+      --text-muted: #8888aa;
+      --radius: 20px;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── starfield ── */
+    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle ease-in-out infinite alternate;
+    }
+    @keyframes twinkle { from { opacity: 0.1; } to { opacity: 0.8; } }
+
+    /* ── progress ── */
+    .progress-wrap {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 6px;
+      background: rgba(255,255,255,0.05);
+      z-index: 100;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent), var(--accent3));
+      border-radius: 0 3px 3px 0;
+      transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    }
+
+    /* ── screens ── */
+    .screen {
+      min-height: 100vh;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative; z-index: 1;
+    }
+    .screen.active { display: flex; }
+
+    /* ── hero ── */
+    .hero-glow {
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%);
+      display: flex; align-items: center; justify-content: center;
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255,215,0,0.2); }
+      50% { transform: scale(1.08); box-shadow: 0 0 80px rgba(255,215,0,0.4); }
+    }
+    .hero-glow .emoji { font-size: 80px; }
+    .hero-title {
+      font-size: clamp(2.2rem, 7vw, 4rem);
+      font-weight: 900;
+      margin: 1.5rem 0 0.5rem;
+      background: linear-gradient(135deg, #ffd700, #ff6b6b, #7bed9f, #70a1ff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 4s ease infinite;
+    }
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--text-muted);
+      max-width: 420px; text-align: center; line-height: 1.8;
+      margin-bottom: 0.5rem;
+    }
+    .hero-hint { font-size: 0.85rem; color: rgba(255,255,255,0.25); margin-bottom: 2rem; }
+    .hero-stats {
+      display: flex; gap: 2rem; margin-bottom: 2rem;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-size: 1.8rem; font-weight: 900; color: var(--accent); }
+    .hero-stat-label { font-size: 0.75rem; color: var(--text-muted); }
+
+    .btn-start {
+      padding: 1.1rem 3.5rem;
+      font-size: 1.3rem; font-weight: 800;
+      border: none; border-radius: 60px;
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
+      color: #1a1a00; cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 30px rgba(255,215,0,0.3);
+      font-family: inherit; letter-spacing: 1px;
+    }
+    .btn-start:hover {
+      transform: translateY(-4px) scale(1.06);
+      box-shadow: 0 8px 40px rgba(255,215,0,0.5);
+    }
+
+    /* ── question card ── */
+    .q-card {
+      width: 100%; max-width: 640px;
+      opacity: 0; transform: translateY(40px) scale(0.97);
+      transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    .q-card.visible { opacity: 1; transform: translateY(0) scale(1); }
+    .q-card.exit { opacity: 0; transform: translateY(-40px) scale(0.97); }
+    .q-scene {
+      font-size: 0.8rem; color: var(--accent4);
+      text-transform: uppercase; letter-spacing: 3px; margin-bottom: 1rem;
+    }
+    .q-number { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .q-text { font-size: 1.4rem; font-weight: 800; line-height: 1.7; margin-bottom: 0.5rem; }
+    .q-hint { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; font-style: italic; }
+
+    .scenario {
+      background: linear-gradient(135deg, rgba(112,161,255,0.1), rgba(123,237,159,0.05));
+      border: 1px solid rgba(112,161,255,0.2);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem; margin-bottom: 1.5rem;
+      font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.85);
+    }
+
+    /* ── options ── */
+    .opts { display: flex; flex-direction: column; gap: 0.7rem; }
+    .opt {
+      display: flex; align-items: flex-start; gap: 0.9rem;
+      padding: 1rem 1.2rem;
+      background: var(--card);
+      border: 2px solid rgba(255,255,255,0.06);
+      border-radius: 14px; cursor: pointer;
+      transition: all 0.25s; user-select: none;
+    }
+    .opt:hover {
+      border-color: rgba(255,215,0,0.3);
+      transform: translateX(6px);
+      background: rgba(255,215,0,0.04);
+    }
+    .opt.selected {
+      border-color: var(--accent);
+      background: rgba(255,215,0,0.08);
+      box-shadow: 0 0 20px rgba(255,215,0,0.1);
+    }
+    .opt-letter {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.8rem; flex-shrink: 0;
+      transition: all 0.25s;
+    }
+    .opt.selected .opt-letter { background: var(--accent); color: #1a1a00; }
+    .opt-body { flex: 1; }
+    .opt-main { font-size: 0.95rem; font-weight: 600; line-height: 1.5; }
+    .opt-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; line-height: 1.4; }
+    .opt-multi .opt-letter { border-radius: 6px; }
+
+    /* ── slider ── */
+    .slider-wrap { margin: 1.5rem 0; }
+    .slider-labels {
+      display: flex; justify-content: space-between;
+      font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;
+    }
+    .slider-input {
+      -webkit-appearance: none; width: 100%; height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent3), var(--accent), var(--accent2));
+      outline: none;
+    }
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      box-shadow: 0 0 15px rgba(255,215,0,0.5);
+      border: 3px solid var(--bg);
+    }
+    .slider-value {
+      text-align: center; font-size: 2rem;
+      font-weight: 900; color: var(--accent); margin-top: 0.8rem;
+    }
+
+    /* ── text ── */
+    .text-input {
+      width: 100%; min-height: 90px;
+      padding: 1rem 1.2rem;
+      background: var(--card);
+      border: 2px solid rgba(255,255,255,0.08);
+      border-radius: 14px; color: var(--text);
+      font-size: 0.95rem; font-family: inherit;
+      resize: vertical; transition: border-color 0.3s; line-height: 1.6;
+    }
+    .text-input:focus { outline: none; border-color: var(--accent); }
+    .text-input::placeholder { color: var(--text-muted); }
+
+    /* ── nav ── */
+    .nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 2.5rem; width: 100%; max-width: 640px; gap: 1rem;
+    }
+    .btn {
+      padding: 0.9rem 2rem; font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 50px; cursor: pointer;
+      transition: all 0.3s; font-family: inherit;
+    }
+    .btn-back {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-back:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+    .btn-next {
+      background: linear-gradient(135deg, var(--accent), #ffaa00);
+      color: #1a1a00; flex: 1; max-width: 220px; text-align: center;
+    }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 4px 25px rgba(255,215,0,0.3); }
+    .btn-next:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── dots ── */
+    .dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 2rem; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); transition: all 0.3s;
+    }
+    .dot.active {
+      background: var(--accent); box-shadow: 0 0 10px rgba(255,215,0,0.5);
+      width: 24px; border-radius: 4px;
+    }
+    .dot.done { background: var(--accent3); }
+
+    /* ── result ── */
+    .result-card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 2.5rem 2rem; max-width: 560px; width: 100%;
+      text-align: center; border: 1px solid rgba(255,215,0,0.15);
+    }
+    .result-badge {
+      width: 120px; height: 120px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; font-size: 60px;
+      animation: pop-in 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    @keyframes pop-in {
+      0% { transform: scale(0) rotate(-30deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    .result-type { font-size: 2rem; font-weight: 900; margin-bottom: 0.3rem; }
+    .result-title { font-size: 1.1rem; color: var(--accent); margin-bottom: 1.2rem; }
+    .result-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; }
+    .result-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+    .tag { padding: 0.35rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .result-meter { margin: 1.5rem 0; }
+    .meter-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .meter-bar { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .meter-fill { height: 100%; border-radius: 5px; transition: width 1.5s cubic-bezier(0.22,1,0.36,1); width: 0%; }
+
+    /* ── share box ── */
+    .share-box {
+      margin-top: 1.5rem; padding: 1.2rem;
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px; border: 1px dashed rgba(255,215,0,0.2);
+    }
+    .share-label { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.8rem; }
+    .share-row { display: flex; gap: 0.5rem; }
+    .share-input {
+      flex: 1; padding: 0.7rem 1rem;
+      background: var(--card); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: var(--text); font-size: 0.85rem;
+      font-family: monospace;
+    }
+    .share-input:focus { outline: none; border-color: var(--accent); }
+    .btn-copy {
+      padding: 0.7rem 1.2rem;
+      background: var(--accent); color: #1a1a00;
+      border: none; border-radius: 10px; font-weight: 700;
+      cursor: pointer; font-family: inherit; font-size: 0.85rem;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-copy:hover { transform: scale(1.05); }
+    .btn-copy.copied { background: var(--accent3); }
+
+    .btn-restart {
+      margin-top: 1.5rem; padding: 0.9rem 2.5rem;
+      font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 50px;
+      background: var(--card); color: var(--text);
+      cursor: pointer; transition: all 0.3s; font-family: inherit;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── rain ── */
+    .rain-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+    .rain-drop {
+      position: absolute; top: -50px; font-size: 28px;
+      animation: rain-fall linear forwards;
+    }
+    @keyframes rain-fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
+    /* ── loading ── */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 3px solid rgba(26,26,0,0.2);
+      border-top-color: #1a1a00;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .q-text { font-size: 1.15rem; }
+      .result-card { padding: 2rem 1.5rem; }
+      .hero-glow { width: 140px; height: 140px; }
+      .hero-glow .emoji { font-size: 60px; }
+      .hero-stats { gap: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-fill" id="progress"></div></div>
+<div class="stars" id="stars"></div>
+<div class="rain-wrap" id="rain"></div>
+
+<!-- ══════ HERO ══════ -->
+<div class="screen active" id="hero">
+  <div class="hero-glow"><span class="emoji">🪙</span></div>
+  <div class="hero-title">你是哪种投资人？</div>
+  <div class="hero-sub">10 个灵魂拷问<br>测出你的投资人格 🧠</div>
+  <div class="hero-stats" id="heroStats"></div>
+  <div class="hero-hint">⏱️ 约 2 分钟 · 完全匿名</div>
+  <button class="btn-start" onclick="go(0)">开始测试</button>
+</div>
+
+<!-- ══════ QUESTIONS ══════ -->
+<div class="screen" id="qScreen">
+  <div class="dots" id="dots"></div>
+  <div class="q-card" id="qCard"></div>
+  <div class="nav">
+    <button class="btn btn-back" id="btnBack" onclick="go(cur-1)">← 返回</button>
+    <button class="btn btn-next" id="btnNext" onclick="go(cur+1)">下一题 →</button>
+  </div>
+</div>
+
+<!-- ══════ RESULT ══════ -->
+<div class="screen" id="resultScreen">
+  <div class="result-card" id="resultCard"></div>
+</div>
+
+<script>
+// ── starfield ──
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*100+'%';
+  s.style.animationDuration = (1.5+Math.random()*3)+'s';
+  s.style.animationDelay = Math.random()*3+'s';
+  starsEl.appendChild(s);
+}
+
+// ── load stats on hero ──
+fetch('/api/stats').then(r=>r.json()).then(data => {
+  const el = document.getElementById('heroStats');
+  if (!data.total) return;
+  const top = data.distribution[0];
+  el.innerHTML = `
+    <div class="hero-stat"><div class="hero-stat-num">${data.total}</div><div class="hero-stat-label">人已测试</div></div>
+    <div class="hero-stat"><div class="hero-stat-num">${top ? JSON.parse(top.personality).emoji : '🪙'}</div><div class="hero-stat-label">最多类型</div></div>
+  `;
+}).catch(()=>{});
+
+// ── questions ──
+const Q = [
+  {
+    scene: '第一幕 · 灵魂拷问',
+    q: '你兜里有 5000 块闲钱，刚好刷到一个博主说某只基金"稳赚不赔"，你第一反应是？',
+    hint: '别想太久，凭直觉选',
+    opts: [
+      { main: '"稳赚不赔"？这四个字本身就不稳吧', sub: '💡 你是那种看到广告就想找 bug 的人' },
+      { main: '先截图，去搜搜这个博主什么来头', sub: '🔍 信息核查是本能反应' },
+      { main: '5000不多，先买 1000 试试水', sub: '🎲 小赌怡情，亏了也不心疼' },
+      { main: '直接转发给懂投资的朋友问意见', sub: '👥 人脉就是最好的风控' },
+    ],
+    key: 'reaction',
+  },
+  {
+    scene: '第一幕 · 灵魂拷问',
+    q: '你手机里有多少个跟钱有关的 App？',
+    hint: '支付宝、银行、基金、股票、记账、加密货币都算',
+    type: 'slider', min: 0, max: 15, default: 3,
+    labels: ['一个都没有','手机就是钱包'],
+    key: 'app_count',
+  },
+  {
+    scene: '第一幕 · 灵魂拷问',
+    q: '朋友聚会聊到"最近在投什么"，你会？',
+    opts: [
+      { main: '竖起耳朵疯狂记笔记', sub: '📝 生怕错过一个亿' },
+      { main: '淡定微笑，心里盘算他们的建议靠不靠谱', sub: '🧠 表面平静，内心在做风控' },
+      { main: '大方分享自己的持仓和收益', sub: '📊 投资社交两不误' },
+      { main: '假装没听到，低头吃菜', sub: '🥬 钱的事，我选择沉默' },
+    ],
+    key: 'social',
+  },
+  {
+    scene: '第二幕 · 风格诊断',
+    q: '你买了一只基金，第二天就跌了 5%，你会？',
+    hint: '5% 意味着 1 万块少了 500',
+    opts: [
+      { main: '立刻卖掉，止损第一', sub: '🏃 跑得快也是一种本事' },
+      { main: '再等等，跌 10% 再考虑', sub: '📊 有自己的止损线' },
+      { main: '无所谓，反正是长期投资', sub: '🧘 佛系选手，心态超稳' },
+      { main: '跌了？再加仓！', sub: '🔥 别人恐惧我贪婪' },
+    ],
+    key: 'loss_reaction',
+  },
+  {
+    scene: '第二幕 · 风格诊断',
+    q: '如果投资有段位，你觉得自己现在是？',
+    opts: [
+      { main: '青铜 — 连 K 线都看不懂', sub: '⚔️ 刚出新手村' },
+      { main: '白银 — 知道分散投资，但执行不了', sub: '🛡️ 懂了很多道理，依然亏钱' },
+      { main: '黄金 — 有自己的策略，偶尔翻车', sub: '👑 小有心得' },
+      { main: '钻石 — 经历过牛熊，心态稳如老狗', sub: '💎 老韭菜了' },
+    ],
+    key: 'rank',
+  },
+  {
+    scene: '第二幕 · 风格诊断',
+    q: '你理想中的"理财助手"应该长什么样？',
+    hint: '选最打动你的那个',
+    opts: [
+      { main: '像个靠谱的老司机，告诉我该买啥', sub: '🚗 直接给答案，不想动脑' },
+      { main: '像个严格的教练，帮我管住手', sub: '🏋️ 克服人性弱点' },
+      { main: '像个百科全书，有问必答', sub: '📚 我想自己学，但需要有人教' },
+      { main: '像个隐形管家，我啥都不用管', sub: '🤖 全自动，躺着赚钱' },
+    ],
+    key: 'assistant_style',
+  },
+  {
+    scene: '第三幕 · 愿望清单',
+    q: '这六个功能，你最想要哪三个？',
+    hint: '只能选 3 个，忍痛割爱吧',
+    type: 'multi', max: 3,
+    opts: [
+      { main: '🏥 AI 体检报告', sub: '一键给持仓做健康检查，告诉你哪里有问题' },
+      { main: '🔍 谣言粉碎机', sub: '看到投资小道消息？帮你查是真是假' },
+      { main: '🔗 产业链透视镜', sub: '一个材料的上下游全给你画出来' },
+      { main: '📒 自动交易日记', sub: '记录每笔买卖，自动算盈亏' },
+      { main: '📖 随身金融词典', sub: '看不懂的术语，点一下就解释' },
+      { main: '🧮 我的研究笔记本', sub: '把散落的公司/行业笔记整理到一起' },
+    ],
+    key: 'features',
+  },
+  {
+    scene: '第三幕 · 愿望清单',
+    q: '如果 AI 能替你做投资中的一件事，你选？',
+    type: 'text',
+    placeholder: '比如：每天早上帮我扫一遍持仓，有问题就提醒我……',
+    key: 'ai_dream',
+  },
+  {
+    scene: '终章 · 最后一击',
+    q: '你觉得"理财"这两个字，最让你联想到什么？',
+    hint: '一个词就行',
+    type: 'text',
+    placeholder: '焦虑？自由？割韭菜？智商税？……',
+    key: 'association',
+  },
+  {
+    scene: '终章 · 最后一击',
+    q: '最后一个问题：你愿意花多少钱/月，用一个真正好用的投资工具？',
+    opts: [
+      { main: '0 元 — 免费的才是最好的', sub: '🆓 白嫖万岁' },
+      { main: '9.9 元 — 一杯奶茶钱', sub: '🧋 小投入试试看' },
+      { main: '29.9 元 — 不到一顿火锅', sub: '🍲 好用就值' },
+      { main: '不确定，先让我试试再说', sub: '🤔 你得先打动我' },
+    ],
+    key: 'willing_to_pay',
+  },
+];
+
+let cur = 0;
+const ans = {};
+
+// ── render ──
+function render(idx) {
+  const card = document.getElementById('qCard');
+  const q = Q[idx];
+
+  const dotsEl = document.getElementById('dots');
+  dotsEl.innerHTML = '';
+  Q.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === idx ? ' active' : '') + (i < idx ? ' done' : '');
+    dotsEl.appendChild(d);
+  });
+
+  document.getElementById('progress').style.width = (idx / Q.length * 100) + '%';
+
+  let html = `<div class="q-scene">${q.scene || ''}</div>`;
+  html += `<div class="q-number">Q${idx+1} / ${Q.length}</div>`;
+  html += `<div class="q-text">${q.q}</div>`;
+  if (q.hint) html += `<div class="q-hint">${q.hint}</div>`;
+
+  if (q.type === 'slider') {
+    const val = ans[q.key] ?? q.default ?? 5;
+    html += `<div class="slider-wrap">
+      <div class="slider-labels"><span>${q.labels[0]}</span><span>${q.labels[1]}</span></div>
+      <input type="range" class="slider-input" min="${q.min}" max="${q.max}" value="${val}" oninput="updateSlider(this,'${q.key}')">
+      <div class="slider-value" id="sliderVal">${val}</div>
+    </div>`;
+  } else if (q.type === 'text') {
+    html += `<textarea class="text-input" id="textInput" placeholder="${q.placeholder||''}" oninput="ans['${q.key}']=this.value">${ans[q.key]||''}</textarea>`;
+  } else if (q.type === 'multi') {
+    html += '<div class="opts">';
+    q.opts.forEach((o,i) => {
+      const sel = (ans[q.key]||[]).includes(i);
+      html += `<div class="opt opt-multi ${sel?'selected':''}" onclick="toggleMulti('${q.key}',${i},this,${q.max})">
+        <div class="opt-letter">${sel?'✓':''}</div>
+        <div class="opt-body"><div class="opt-main">${o.main}</div>${o.sub?`<div class="opt-sub">${o.sub}</div>`:''}</div>
+      </div>`;
+    });
+    html += '</div>';
+  } else {
+    html += '<div class="opts">';
+    q.opts.forEach((o,i) => {
+      const sel = ans[q.key] === i;
+      html += `<div class="opt ${sel?'selected':''}" onclick="pickSingle('${q.key}',${i},this)">
+        <div class="opt-letter">${String.fromCharCode(65+i)}</div>
+        <div class="opt-body"><div class="opt-main">${o.main}</div>${o.sub?`<div class="opt-sub">${o.sub}</div>`:''}</div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  card.innerHTML = html;
+  card.classList.remove('visible','exit');
+  requestAnimationFrame(() => card.classList.add('visible'));
+
+  document.getElementById('btnBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  document.getElementById('btnNext').textContent = idx === Q.length - 1 ? '看结果 🎉' : '下一题 →';
+}
+
+function pickSingle(key, idx, el) {
+  ans[key] = idx;
+  el.parentElement.querySelectorAll('.opt').forEach(o => {
+    o.classList.remove('selected');
+    o.querySelector('.opt-letter').textContent = String.fromCharCode(65 + [...o.parentElement.children].indexOf(o));
+  });
+  el.classList.add('selected');
+  el.querySelector('.opt-letter').textContent = '✓';
+}
+
+function toggleMulti(key, idx, el, max) {
+  if (!ans[key]) ans[key] = [];
+  const i = ans[key].indexOf(idx);
+  if (i >= 0) {
+    ans[key].splice(i, 1);
+    el.classList.remove('selected');
+    el.querySelector('.opt-letter').textContent = '';
+  } else {
+    if (ans[key].length >= max) {
+      el.style.animation = 'none'; el.offsetHeight;
+      el.style.animation = 'shake 0.4s ease';
+      return;
+    }
+    ans[key].push(idx);
+    el.classList.add('selected');
+    el.querySelector('.opt-letter').textContent = '✓';
+  }
+}
+
+function updateSlider(input, key) {
+  ans[key] = parseInt(input.value);
+  document.getElementById('sliderVal').textContent = input.value;
+}
+
+// ── validation ──
+function isAnswered(idx) {
+  const q = Q[idx];
+  if (q.type === 'slider') return true; // slider always has a value
+  if (q.type === 'multi') return (ans[q.key] || []).length > 0;
+  if (q.type === 'text') return (ans[q.key] || '').trim().length > 0;
+  return ans[q.key] !== undefined; // single
+}
+
+function showHint(msg) {
+  let hint = document.getElementById('validationHint');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'validationHint';
+    hint.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--accent2);color:white;padding:0.7rem 1.5rem;border-radius:12px;font-size:0.9rem;font-weight:600;z-index:200;opacity:0;transition:all 0.3s;pointer-events:none;box-shadow:0 4px 20px rgba(255,71,87,0.4);';
+    document.body.appendChild(hint);
+  }
+  hint.textContent = msg;
+  hint.style.opacity = '1';
+  hint.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(hint._timer);
+  hint._timer = setTimeout(() => {
+    hint.style.opacity = '0';
+    hint.style.transform = 'translateX(-50%) translateY(-10px)';
+  }, 2000);
+}
+
+// ── navigation ──
+function go(idx) {
+  if (idx < 0) return;
+
+  // validate before going forward
+  if (idx > cur && !isAnswered(cur)) {
+    const q = Q[cur];
+    const msg = q.type === 'multi' ? '至少选一个再继续 👆'
+              : q.type === 'text' ? '写点什么再继续 ✍️'
+              : '先选一个再继续 👆';
+    showHint(msg);
+    // shake the card
+    const card = document.getElementById('qCard');
+    card.style.animation = 'none'; card.offsetHeight;
+    card.style.animation = 'shake 0.4s ease';
+    return;
+  }
+
+  if (idx >= Q.length) { submitAndShowResult(); return; }
+
+  const card = document.getElementById('qCard');
+  if (idx > cur) {
+    card.classList.add('exit');
+    setTimeout(() => { cur = idx; render(idx); }, 300);
+  } else {
+    cur = idx;
+    render(idx);
+  }
+
+  document.getElementById('hero').classList.remove('active');
+  document.getElementById('qScreen').classList.add('active');
+  document.getElementById('resultScreen').classList.remove('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── personality calculation ──
+function calcType() {
+  const r = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
+  const types = [
+    {
+      name: '佛系躺平型', emoji: '🧘',
+      title: '买入即忘，岁月静好',
+      bg: 'radial-gradient(circle, rgba(123,237,159,0.3), transparent 70%)',
+      desc: '你对投资的态度是"买了就别看了"。涨了开心，跌了也还好。你最大的优势是心态稳，最大的风险是可能错过止损时机。',
+      tags: [['低频操作','rgba(123,237,159,0.2)','var(--accent3)'],['心态王者','rgba(255,215,0,0.2)','var(--accent)'],['需要提醒','rgba(255,71,87,0.2)','var(--accent2)']],
+      risk: r(15,35), learn: r(20,40), leek: r(10,30),
+    },
+    {
+      name: '知识焦虑型', emoji: '📚',
+      title: '收藏从未停止，行动从未开始',
+      bg: 'radial-gradient(circle, rgba(112,161,255,0.3), transparent 70%)',
+      desc: '你手机里存了 200 篇投资文章，关注了 50 个财经博主，但实际操作经验约等于零。你需要的不是更多知识，而是一个"现在就开始"的推力。',
+      tags: [['信息囤积症','rgba(112,161,255,0.2)','var(--accent4)'],['完美主义','rgba(255,215,0,0.2)','var(--accent)'],['潜力股','rgba(123,237,159,0.2)','var(--accent3)']],
+      risk: r(20,40), learn: r(75,95), leek: r(15,35),
+    },
+    {
+      name: '追涨杀跌型', emoji: '🎢',
+      title: '哪里热闹去哪里，一买就跌一卖就涨',
+      bg: 'radial-gradient(circle, rgba(255,71,87,0.3), transparent 70%)',
+      desc: '你的投资决策主要靠"感觉"和"消息"。涨的时候追进去，跌的时候割出来——然后它就涨回去了。你需要一个冷静的系统帮你管住手。',
+      tags: [['FOMO患者','rgba(255,71,87,0.2)','var(--accent2)'],['情绪驱动','rgba(255,215,0,0.2)','var(--accent)'],['急需风控','rgba(112,161,255,0.2)','var(--accent4)']],
+      risk: r(70,95), learn: r(30,50), leek: r(70,95),
+    },
+    {
+      name: '理性研究型', emoji: '🔬',
+      title: '先调研再下手，数据说话',
+      bg: 'radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%)',
+      desc: '你做事有章法，看数据、读报告、算估值。你最需要的是一个好用的工具帮你把散落的研究整合起来，以及偶尔有人提醒你别过度分析。',
+      tags: [['逻辑派','rgba(255,215,0,0.2)','var(--accent)'],['数据控','rgba(112,161,255,0.2)','var(--accent4)'],['偶尔纠结','rgba(123,237,159,0.2)','var(--accent3)']],
+      risk: r(35,55), learn: r(65,85), leek: r(5,20),
+    },
+    {
+      name: '社交跟风型', emoji: '👥',
+      title: '朋友说好就是好，群友推荐就是宝',
+      bg: 'radial-gradient(circle, rgba(160,120,255,0.3), transparent 70%)',
+      desc: '你的投资决策大多来自社交圈——朋友推荐、群友晒单、大V喊单。人脉是你的信息源，但也可能是你的风险源。学会独立判断是你进阶的关键。',
+      tags: [['人脉投资','rgba(160,120,255,0.2)','#a078ff'],['信任驱动','rgba(255,215,0,0.2)','var(--accent)'],['需要验证','rgba(255,71,87,0.2)','var(--accent2)']],
+      risk: r(45,65), learn: r(35,55), leek: r(50,75),
+    },
+  ];
+
+  const loss = ans.loss_reaction ?? 0;
+  const rank = ans.rank ?? 0;
+  const reaction = ans.reaction ?? 0;
+  const social = ans.social ?? 0;
+
+  if (loss === 3 && rank >= 2) return types[3];
+  if (loss === 0) return types[2];
+  if (loss === 2 || loss === 3) return types[0];
+  if (reaction === 2 && loss === 1) return types[2];
+  if (reaction === 3) return types[4];
+  if (rank === 0) return types[1];
+  if (social === 0) return types[1];
+  if (social === 1) return types[3];
+  if (social === 2) return types[4];
+  if (social === 3) return types[0];
+  return types[1];
+}
+
+// ── submit & show result ──
+async function submitAndShowResult() {
+  const personality = calcType();
+  const btn = document.getElementById('btnNext');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>提交中…';
+
+  let shareId = null;
+  try {
+    const resp = await fetch('/api/survey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers: ans, personality: { name: personality.name, emoji: personality.emoji } }),
+    });
+    const data = await resp.json();
+    if (data.ok) shareId = data.id;
+  } catch (e) {
+    console.warn('提交失败，结果仍会展示', e);
+  }
+
+  btn.disabled = false;
+  btn.textContent = '看结果 🎉';
+
+  showResult(personality, shareId);
+}
+
+function showResult(type, shareId) {
+  document.getElementById('progress').style.width = '100%';
+  document.getElementById('qScreen').classList.remove('active');
+  document.getElementById('resultScreen').classList.add('active');
+
+  const shareUrl = shareId ? `${location.origin}/r/${shareId}` : '';
+  const card = document.getElementById('resultCard');
+  card.innerHTML = `
+    <div class="result-badge" style="background:${type.bg}">${type.emoji}</div>
+    <div class="result-type">${type.name}</div>
+    <div class="result-title">${type.title}</div>
+    <div class="result-desc">${type.desc}</div>
+    <div class="result-tags">${type.tags.map(t => `<span class="tag" style="background:${t[1]};color:${t[2]}">${t[0]}</span>`).join('')}</div>
+    <div class="result-meter">
+      <div class="meter-label"><span>风险偏好</span><span>${type.risk}/100</span></div>
+      <div class="meter-bar"><div class="meter-fill" id="riskFill" style="background:linear-gradient(90deg,var(--accent3),var(--accent))"></div></div>
+    </div>
+    <div class="result-meter">
+      <div class="meter-label"><span>学习意愿</span><span>${type.learn}/100</span></div>
+      <div class="meter-bar"><div class="meter-fill" id="learnFill" style="background:linear-gradient(90deg,var(--accent4),var(--accent2))"></div></div>
+    </div>
+    <div class="result-meter">
+      <div class="meter-label"><span>韭菜指数</span><span>${type.leek}/100</span></div>
+      <div class="meter-bar"><div class="meter-fill" id="leekFill" style="background:linear-gradient(90deg,var(--accent3),var(--accent2))"></div></div>
+    </div>
+    ${shareUrl ? `
+    <div class="share-box">
+      <div class="share-label">📤 分享给你朋友，看看他们是哪种投资人</div>
+      <div class="share-row">
+        <input class="share-input" id="shareInput" value="${shareUrl}" readonly onclick="this.select()">
+        <button class="btn-copy" id="btnCopy" onclick="copyLink()">复制链接</button>
+      </div>
+    </div>` : ''}
+    <button class="btn-restart" onclick="location.reload()">再测一次 🔄</button>
+  `;
+
+  setTimeout(() => {
+    document.getElementById('riskFill').style.width = type.risk + '%';
+    document.getElementById('learnFill').style.width = type.learn + '%';
+    document.getElementById('leekFill').style.width = type.leek + '%';
+  }, 300);
+
+  // money rain
+  const rain = document.getElementById('rain');
+  const emojis = ['💰','🪙','💵','💎','✨','🎉','🤑','📈','🔥'];
+  for (let i = 0; i < 50; i++) {
+    const d = document.createElement('div');
+    d.className = 'rain-drop';
+    d.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    d.style.left = Math.random()*100+'%';
+    d.style.animationDuration = (2+Math.random()*3)+'s';
+    d.style.animationDelay = Math.random()*2+'s';
+    rain.appendChild(d);
+  }
+  setTimeout(() => rain.innerHTML = '', 6000);
+}
+
+function copyLink() {
+  const input = document.getElementById('shareInput');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制链接'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
