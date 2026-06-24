@@ -1,0 +1,276 @@
+.section {
+  margin-bottom: var(--space-3xl);
+}
+
+.sectionLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: 3px;
+  margin-bottom: var(--space-lg);
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: var(--space-2xl);
+  line-height: 1.8;
+}
+
+.description strong {
+  color: var(--text-primary);
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  font-size: 14px;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  line-height: 1.7;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.examplesLabel {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.exampleChip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.exampleChip:hover {
+  background: var(--border-light);
+  color: var(--text-primary);
+}
+
+.verifyBtn {
+  margin-top: var(--space-xl);
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  font-size: 15px;
+  font-weight: var(--font-semibold);
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.verifyBtn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.verifyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- 结果 ---- */
+
+.summaryCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.summaryTitle {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-sm);
+}
+
+.summaryText {
+  font-size: 15px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.skeleton {
+  margin-top: var(--space-md);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.evidence {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.evidenceTitle {
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.evidenceRow {
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.evidenceRow:last-child {
+  border-bottom: none;
+}
+
+.evidenceText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.evidenceText strong {
+  color: var(--text-primary);
+}
+
+.evidenceErr .evidenceText {
+  color: var(--text-tertiary);
+}
+
+.evidenceSource {
+  display: block;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.matrix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.claimCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.claimCard.verified {
+  border-left-color: var(--green);
+}
+
+.claimCard.partial {
+  border-left-color: #d9a441;
+}
+
+.claimCard.wrong {
+  border-left-color: var(--red);
+}
+
+.claimCard.unverified {
+  border-left-color: var(--text-tertiary);
+}
+
+.claimHeader {
+  margin-bottom: var(--space-sm);
+}
+
+.claimBadge {
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.claimText {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: var(--space-sm);
+}
+
+.claimReason {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.rawBox {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.riskCard {
+  margin-top: var(--space-xl);
+  background: #fbf3f0;
+  border: 1px solid #ecd7d0;
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+
+.riskTitle {
+  font-size: 13px;
+  font-weight: var(--font-semibold);
+  color: var(--red);
+  margin-bottom: var(--space-xs);
+}
+
+.riskText {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.bottomLine {
+  margin-top: var(--space-xl);
+  font-size: 14px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: 1.7;
+  padding: var(--space-lg);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.disclaimer {
+  margin-top: var(--space-xl);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  line-height: 1.8;
+}
+
+.disclaimer strong {
+  color: var(--text-secondary);
+}

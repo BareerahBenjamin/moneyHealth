@@ -1,0 +1,140 @@
+.section {
+  margin-bottom: var(--space-3xl);
+}
+
+.sectionLabel {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: 3px;
+  margin-bottom: var(--space-lg);
+}
+
+.description {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: var(--space-2xl);
+  line-height: 1.6;
+}
+
+.category {
+  margin-bottom: var(--space-2xl);
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.categoryIcon {
+  font-size: 16px;
+}
+
+.categoryName {
+  font-size: 14px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.categoryCount {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-left: auto;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.item {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.item:hover {
+  background: var(--border-light);
+}
+
+.question {
+  font-weight: var(--font-semibold);
+  font-size: 14px;
+}
+
+.answer {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: var(--space-md);
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s, max-height 0.3s, margin-top 0.3s;
+}
+
+.answerVisible {
+  opacity: 1;
+  max-height: 500px;
+  margin-top: var(--space-md);
+}
+
+.answerLoading {
+  color: var(--text-tertiary);
+  font-style: italic;
+  opacity: 1;
+  max-height: 50px;
+  margin-top: var(--space-md);
+}
+
+.roadmap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.step:last-child {
+  border-bottom: none;
+}
+
+.stepIcon {
+  width: 28px;
+  height: 28px;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.stepDone {
+  background: var(--green);
+  color: white;
+}
+
+.stepTitle {
+  font-weight: var(--font-normal);
+  font-size: 14px;
+}
+
+.stepDesc {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  margin-top: 2px;
+}

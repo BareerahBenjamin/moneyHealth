@@ -1,0 +1,42 @@
+/* frontend/src/styles/tokens.css */
+:root {
+  /* Backgrounds */
+  --bg-primary: #f8f5f0;
+  --bg-card: #ffffff;
+  --bg-secondary: #f0ebe3;
+
+  /* Text */
+  --text-primary: #3d3429;
+  --text-secondary: #8a7a6a;
+  --text-tertiary: #b0a090;
+
+  /* Accent */
+  --accent: #3d3429;
+  --accent-hover: #2d2419;
+  --green: #5a8a5e;
+  --red: #c07060;
+
+  /* Borders */
+  --border-light: #e8e0d4;
+  --border-medium: #d4c8b8;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-pill: 24px;
+
+  /* Typography */
+  --font-family: -apple-system, 'Noto Sans SC', 'Hiragino Sans', sans-serif;
+  --font-light: 300;
+  --font-normal: 500;
+  --font-semibold: 600;
+}
