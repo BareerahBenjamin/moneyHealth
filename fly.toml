@@ -1,0 +1,18 @@
+app = "moneyhealth"
+primary_region = "ams"
+
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+
+[[mounts]]
+  source = "data"
+  destination = "/data"
+
+[env]
+  DATA_DIR = "/data"

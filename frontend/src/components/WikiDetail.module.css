@@ -1,0 +1,435 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-xl) 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+}
+
+.backBtn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: 13px;
+  font-family: var(--font-family);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.backBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.editBtn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: 13px;
+  font-family: var(--font-family);
+  color: var(--accent);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.editBtn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.deleteBtn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--red);
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: 13px;
+  font-family: var(--font-family);
+  color: var(--red);
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background: var(--red);
+  color: #fff;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  margin-bottom: var(--space-xs);
+}
+
+.entryId {
+  font-size: 24px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2xl);
+  font-family: monospace;
+}
+
+.loading {
+  text-align: center;
+  padding: var(--space-3xl);
+  color: var(--text-secondary);
+}
+
+/* 表单 */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.input {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font-family);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.textarea {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font-family);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* 评分 */
+.scoreGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+}
+
+.scoreItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.scoreLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.scoreInput {
+  width: 50px;
+  text-align: center;
+  padding: var(--space-sm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: var(--font-family);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* 列表项 */
+.listItems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.removeBtn {
+  border: none;
+  background: none;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 var(--space-xs);
+}
+
+.removeBtn:hover {
+  color: var(--red);
+}
+
+.listAdd {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.listAdd .input {
+  flex: 1;
+}
+
+.addBtn {
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: none;
+  font-size: 16px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* 表单操作 */
+.formActions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.saveBtn {
+  flex: 1;
+  padding: var(--space-lg);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background: var(--accent-hover);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancelBtn {
+  padding: var(--space-lg) var(--space-xl);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: none;
+  font-size: 15px;
+  font-family: var(--font-family);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* 只读详情 */
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.detailName {
+  font-size: 22px;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.detailSummary {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 评分展示 */
+.scoreDisplay {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.scoreChip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+}
+
+.scoreChipLabel {
+  color: var(--text-secondary);
+}
+
+.scoreChipValue {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+/* 多空 */
+.bullBear {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.bullSection,
+.bearSection {
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.bullSection {
+  border-left: 4px solid var(--green);
+}
+
+.bearSection {
+  border-left: 4px solid var(--red);
+}
+
+.bullBearLabel {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-sm);
+}
+
+.bullBearList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.bullBearList li {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.bullBearList li::before {
+  content: '·';
+  margin-right: var(--space-sm);
+  color: var(--text-tertiary);
+}
+
+.emptyItem {
+  color: var(--text-tertiary) !important;
+  font-style: italic;
+}
+
+/* 字段展示 */
+.fieldDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.noteList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.noteList li {
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+
+/* 变更记录 */
+.changelog {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-light);
+}
+
+.changelogItem {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  padding: var(--space-xs) 0;
+}
+
+.changelogDate {
+  font-family: monospace;
+  min-width: 130px;
+}
+
+.changelogAction {
+  text-transform: uppercase;
+}
