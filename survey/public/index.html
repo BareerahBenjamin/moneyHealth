@@ -412,6 +412,7 @@ fetch('/api/stats').then(r=>r.json()).then(data => {
 
 // ── questions ──
 const Q = [
+  // ── 第一幕 · 灵魂拷问 ──
   {
     scene: '第一幕 · 灵魂拷问',
     q: '你兜里有 5000 块闲钱，刚好刷到一个博主说某只基金"稳赚不赔"，你第一反应是？',
@@ -443,6 +444,8 @@ const Q = [
     ],
     key: 'social',
   },
+
+  // ── 第二幕 · 风格诊断 ──
   {
     scene: '第二幕 · 风格诊断',
     q: '你买了一只基金，第二天就跌了 5%，你会？',
@@ -468,6 +471,18 @@ const Q = [
   },
   {
     scene: '第二幕 · 风格诊断',
+    q: '半夜刷到一条"重大利好！明天必涨！"的帖子，你会？',
+    hint: '凌晨 2 点，你正躺在床上',
+    opts: [
+      { main: '立刻设个闹钟，明早开盘就冲', sub: '⏰ 机会不等人' },
+      { main: '截图存着，明天再研究', sub: '📸 先收藏，理性分析' },
+      { main: '看看评论区怎么说', sub: '💬 群众的眼睛是雪亮的（？）' },
+      { main: '划走，这种帖子每天有几百条', sub: '👋 见多了，免疫了' },
+    ],
+    key: 'midnight_reaction',
+  },
+  {
+    scene: '第二幕 · 风格诊断',
     q: '你理想中的"理财助手"应该长什么样？',
     hint: '选最打动你的那个',
     opts: [
@@ -478,8 +493,47 @@ const Q = [
     ],
     key: 'assistant_style',
   },
+
+  // ── 第三幕 · 投资人格 ──
   {
-    scene: '第三幕 · 愿望清单',
+    scene: '第三幕 · 投资人格',
+    q: '如果用一种动物形容你的投资风格，你觉得自己是？',
+    opts: [
+      { main: '🦅 老鹰 — 高空盘旋，一击必中', sub: '耐心等待最佳时机' },
+      { main: '🐙 章鱼 — 八只手同时操作', sub: '分散投资，到处都有一点' },
+      { main: '🐢 乌龟 — 慢慢来，稳稳的', sub: '不求暴富，只求不亏' },
+      { main: '🐒 猴子 — 上蹿下跳，停不下来', sub: '一天不交易就手痒' },
+    ],
+    key: 'animal',
+  },
+  {
+    scene: '第三幕 · 投资人格',
+    q: '你的投资亏了 30%，这时有人给你一个"内幕消息"说马上要涨回来，你？',
+    hint: '亏 30% 意味着 1 万只剩 7000 了',
+    opts: [
+      { main: '信了！再加仓摊低成本', sub: '🎰 赌一把，回本就跑' },
+      { main: '半信半疑，先查查这个消息源', sub: '🕵️ 亏钱让我变谨慎了' },
+      { main: '不信，该止损就止损', sub: '✋ 承认错误也是一种本事' },
+      { main: '已经麻了，爱咋咋地', sub: '😶 亏到没感觉了' },
+    ],
+    key: 'insider_reaction',
+  },
+  {
+    scene: '第三幕 · 投资人格',
+    q: '你身边最会投资的人，你觉得他最大的优点是？',
+    hint: '想想你认识的"投资大佬"',
+    opts: [
+      { main: '信息灵通，总能第一时间知道消息', sub: '📡 人脉广，消息快' },
+      { main: '心态好，涨跌都不慌', sub: '🧘 情绪稳定才是核心竞争力' },
+      { main: '爱学习，天天在研究', sub: '📖 知识就是金钱' },
+      { main: '果断，该买就买该卖就卖', sub: '⚔️ 执行力拉满' },
+    ],
+    key: 'best_quality',
+  },
+
+  // ── 第四幕 · 愿望清单 ──
+  {
+    scene: '第四幕 · 愿望清单',
     q: '这六个功能，你最想要哪三个？',
     hint: '只能选 3 个，忍痛割爱吧',
     type: 'multi', max: 3,
@@ -494,12 +548,26 @@ const Q = [
     key: 'features',
   },
   {
-    scene: '第三幕 · 愿望清单',
+    scene: '第四幕 · 愿望清单',
     q: '如果 AI 能替你做投资中的一件事，你选？',
     type: 'text',
     placeholder: '比如：每天早上帮我扫一遍持仓，有问题就提醒我……',
     key: 'ai_dream',
   },
+  {
+    scene: '第四幕 · 愿望清单',
+    q: '你最怕在投资中遇到什么？',
+    hint: '选最让你焦虑的那个',
+    opts: [
+      { main: '😱 买完就跌，卖完就涨', sub: '仿佛被监控了一样' },
+      { main: '🕳️ 踩雷暴雷，血本无归', sub: '一夜回到解放前' },
+      { main: '🐌 别人赚翻了，就我的不涨', sub: '踏空比亏钱还难受' },
+      { main: '🤯 术语太多，完全看不懂', sub: '感觉自己是个文盲' },
+    ],
+    key: 'biggest_fear',
+  },
+
+  // ── 终章 · 最后一击 ──
   {
     scene: '终章 · 最后一击',
     q: '你觉得"理财"这两个字，最让你联想到什么？',
@@ -507,6 +575,17 @@ const Q = [
     type: 'text',
     placeholder: '焦虑？自由？割韭菜？智商税？……',
     key: 'association',
+  },
+  {
+    scene: '终章 · 最后一击',
+    q: '如果你的投资收益翻倍了，你第一件事会？',
+    opts: [
+      { main: '请朋友吃顿好的', sub: '🍽️ 独乐乐不如众乐乐' },
+      { main: '全部取出，落袋为安', sub: '💰 到手的钱才是钱' },
+      { main: '继续投，让利润奔跑', sub: '📈 复利是世界第八大奇迹' },
+      { main: '先截图发朋友圈', sub: '📱 收益可以不取，朋友圈必须发' },
+    ],
+    key: 'double_reaction',
   },
   {
     scene: '终章 · 最后一击',
@@ -725,22 +804,89 @@ function calcType() {
     },
   ];
 
-  const loss = ans.loss_reaction ?? 0;
-  const rank = ans.rank ?? 0;
-  const reaction = ans.reaction ?? 0;
-  const social = ans.social ?? 0;
+  // score each type based on all answers
+  const scores = [0, 0, 0, 0, 0]; // 佛系, 知识焦虑, 追涨杀跌, 理性研究, 社交跟风
 
-  if (loss === 3 && rank >= 2) return types[3];
-  if (loss === 0) return types[2];
-  if (loss === 2 || loss === 3) return types[0];
-  if (reaction === 2 && loss === 1) return types[2];
-  if (reaction === 3) return types[4];
-  if (rank === 0) return types[1];
-  if (social === 0) return types[1];
-  if (social === 1) return types[3];
-  if (social === 2) return types[4];
-  if (social === 3) return types[0];
-  return types[1];
+  // Q1: reaction to "稳赚不赔"
+  const reaction = ans.reaction ?? 0;
+  if (reaction === 0) scores[3] += 2; // 怀疑 → 理性
+  if (reaction === 1) scores[3] += 1.5; scores[1] += 1; // 查证 → 理性/知识
+  if (reaction === 2) scores[2] += 2; // 试试水 → 追涨
+  if (reaction === 3) scores[4] += 2; // 问朋友 → 社交
+
+  // Q3: social behavior
+  const social = ans.social ?? 0;
+  if (social === 0) scores[1] += 2; // 记笔记 → 知识焦虑
+  if (social === 1) scores[3] += 2; // 盘算 → 理性
+  if (social === 2) scores[4] += 2; // 分享 → 社交
+  if (social === 3) scores[0] += 2; // 沉默 → 佛系
+
+  // Q4: loss reaction
+  const loss = ans.loss_reaction ?? 0;
+  if (loss === 0) scores[2] += 2; // 止损 → 追涨（追涨杀跌的"杀跌"）
+  if (loss === 1) scores[3] += 1.5; // 等等 → 理性
+  if (loss === 2) scores[0] += 2; // 无所谓 → 佛系
+  if (loss === 3) scores[2] += 1; scores[0] += 1; // 加仓 → 追涨/佛系
+
+  // Q5: rank
+  const rank = ans.rank ?? 0;
+  if (rank === 0) scores[1] += 2; // 青铜 → 知识焦虑
+  if (rank === 1) scores[2] += 1; scores[1] += 1; // 白银
+  if (rank === 2) scores[3] += 2; // 黄金 → 理性
+  if (rank === 3) scores[3] += 1; scores[0] += 1; // 钻石
+
+  // Q6: midnight reaction
+  const midnight = ans.midnight_reaction ?? 0;
+  if (midnight === 0) scores[2] += 2.5; // 设闹钟冲 → 追涨杀跌
+  if (midnight === 1) scores[3] += 2; // 截图研究 → 理性
+  if (midnight === 2) scores[4] += 2; // 看评论 → 社交
+  if (midnight === 3) scores[0] += 2; // 划走 → 佛系
+
+  // Q7: assistant style
+  const assistant = ans.assistant_style ?? 0;
+  if (assistant === 0) scores[4] += 1; scores[2] += 1; // 老司机 → 社交/追涨
+  if (assistant === 1) scores[2] += 1; scores[3] += 1; // 教练 → 追涨/理性
+  if (assistant === 2) scores[1] += 2; // 百科 → 知识焦虑
+  if (assistant === 3) scores[0] += 2; // 管家 → 佛系
+
+  // Q8: animal
+  const animal = ans.animal ?? 0;
+  if (animal === 0) scores[3] += 2; // 老鹰 → 理性
+  if (animal === 1) scores[2] += 1; scores[4] += 1; // 章鱼 → 追涨/社交
+  if (animal === 2) scores[0] += 2; // 乌龟 → 佛系
+  if (animal === 3) scores[2] += 2; // 猴子 → 追涨
+
+  // Q9: insider reaction
+  const insider = ans.insider_reaction ?? 0;
+  if (insider === 0) scores[2] += 2.5; // 信内幕 → 追涨
+  if (insider === 1) scores[3] += 2; // 查证 → 理性
+  if (insider === 2) scores[3] += 1; scores[0] += 1; // 止损 → 理性/佛系
+  if (insider === 3) scores[0] += 2; // 麻了 → 佛系
+
+  // Q10: best quality
+  const quality = ans.best_quality ?? 0;
+  if (quality === 0) scores[4] += 2; // 消息灵通 → 社交
+  if (quality === 1) scores[0] += 2; // 心态好 → 佛系
+  if (quality === 2) scores[1] += 2; // 爱学习 → 知识焦虑
+  if (quality === 3) scores[2] += 2; // 果断 → 追涨
+
+  // Q13: biggest fear
+  const fear = ans.biggest_fear ?? 0;
+  if (fear === 0) scores[2] += 2; // 买完就跌 → 追涨（典型追涨杀跌焦虑）
+  if (fear === 1) scores[3] += 1; scores[0] += 1; // 暴雷 → 理性/佛系
+  if (fear === 2) scores[2] += 1.5; scores[4] += 0.5; // 踏空 → 追涨/社交
+  if (fear === 3) scores[1] += 2; // 看不懂 → 知识焦虑
+
+  // Q15: double reaction
+  const dbl = ans.double_reaction ?? 0;
+  if (dbl === 0) scores[4] += 2; // 请客 → 社交
+  if (dbl === 1) scores[0] += 1; scores[3] += 1; // 取出 → 佛系/理性
+  if (dbl === 2) scores[2] += 1; scores[3] += 1; // 继续投 → 追涨/理性
+  if (dbl === 3) scores[4] += 2; // 发朋友圈 → 社交
+
+  // find the highest score
+  const maxIdx = scores.indexOf(Math.max(...scores));
+  return types[maxIdx];
 }
 
 // ── submit & show result ──

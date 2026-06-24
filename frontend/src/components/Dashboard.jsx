@@ -1,6 +1,6 @@
 import styles from './Dashboard.module.css'
 
-export default function Dashboard({ analysis, onSelectHolding }) {
+export default function Dashboard({ analysis, onRefresh, onSelectHolding }) {
   if (!analysis) return (
     <div className={styles.empty}>
       <div className={styles.emptyTitle}>还没有数据</div>
@@ -15,7 +15,10 @@ export default function Dashboard({ analysis, onSelectHolding }) {
   return (
     <div>
       <div className={styles.totalSection}>
-        <div className={styles.totalLabel}>总 资 产</div>
+        <div className={styles.totalLabel}>
+          总 资 产
+          <button className={styles.refreshBtn} onClick={onRefresh} title="刷新数据">↻</button>
+        </div>
         <div className={styles.totalValue}>¥ {((summary.total_fund_value_cny || 0) + (summary.total_stock_value_cny || 0)).toLocaleString()}</div>
         <div className={styles.breakdown}>
           <div className={styles.breakdownItem}>

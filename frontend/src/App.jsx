@@ -100,13 +100,37 @@ function App() {
         {page === 'dashboard' && (
           <Dashboard
             analysis={analysis}
+            onRefresh={async () => {
+              setAnalysis({ loading: true })
+              try {
+                const { analyzePortfolio } = await import('./api')
+                const data = await analyzePortfolio(portfolio)
+                setAnalysis(data)
+              } catch (e) {
+                setAnalysis({ error: e.message })
+              }
+            }}
             onSelectHolding={(holding) => {
               setSelectedHolding(holding)
               setPage('detail')
             }}
           />
         )}
-        {page === 'report' && <Report report={report} />}
+        {page === 'report' && (
+          <Report
+            report={report}
+            onRefresh={async () => {
+              setReport({ loading: true })
+              try {
+                const { generateReport } = await import('./api')
+                const data = await generateReport(portfolio)
+                setReport(data)
+              } catch (e) {
+                setReport({ error: e.message })
+              }
+            }}
+          />
+        )}
         {page === 'factcheck' && <FactCheck />}
         {page === 'supplychain' && <SupplyChain />}
         {page === 'wiki' && <Wiki />}

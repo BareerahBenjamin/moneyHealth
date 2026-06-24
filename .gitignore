@@ -11,7 +11,7 @@ backend/.env
 frontend/.env.production
 
 # Node
-frontend/node_modules/
+*/node_modules/
 frontend/dist/
 
 # Claude Code
@@ -35,3 +35,6 @@ Thumbs.db
 
 # Data (user-generated, don't track)
 backend/data/
+survey/survey.db
+survey/survey.db-wal
+survey/survey.db-shm

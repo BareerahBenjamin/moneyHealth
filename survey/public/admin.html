@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>问卷数据 — 管理后台</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, sans-serif;
+      background: #0a0a1a; color: #f0f0f0;
+      min-height: 100vh; padding: 2rem 1.5rem;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+
+    /* header */
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .header h1 { font-size: 1.6rem; font-weight: 900; }
+    .header h1 span { color: #ffd700; }
+    .refresh-btn {
+      padding: 0.6rem 1.2rem; background: #1a1a3e; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: #f0f0f0; cursor: pointer; font-family: inherit;
+      font-size: 0.85rem; transition: all 0.2s;
+    }
+    .refresh-btn:hover { border-color: #ffd700; color: #ffd700; }
+
+    /* stats cards */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: #12122a; border-radius: 14px; padding: 1.2rem;
+      border: 1px solid rgba(255,255,255,0.05); text-align: center;
+    }
+    .stat-num { font-size: 2rem; font-weight: 900; color: #ffd700; }
+    .stat-label { font-size: 0.8rem; color: #8888aa; margin-top: 0.2rem; }
+
+    /* distribution chart */
+    .dist-section {
+      background: #12122a; border-radius: 14px; padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem;
+    }
+    .dist-section h2 { font-size: 1rem; margin-bottom: 1rem; color: #8888aa; }
+    .dist-bar-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+    .dist-emoji { font-size: 1.3rem; width: 30px; text-align: center; }
+    .dist-name { font-size: 0.85rem; width: 100px; flex-shrink: 0; }
+    .dist-bar-bg {
+      flex: 1; height: 24px; background: rgba(255,255,255,0.04);
+      border-radius: 6px; overflow: hidden; position: relative;
+    }
+    .dist-bar-fill {
+      height: 100%; border-radius: 6px; transition: width 1s ease;
+      display: flex; align-items: center; padding-left: 8px;
+      font-size: 0.75rem; font-weight: 700; color: #0a0a1a; min-width: 30px;
+    }
+    .dist-count { font-size: 0.85rem; color: #8888aa; width: 40px; text-align: right; }
+
+    /* table */
+    .table-section {
+      background: #12122a; border-radius: 14px; padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .table-section h2 { font-size: 1rem; margin-bottom: 1rem; color: #8888aa; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th {
+      text-align: left; padding: 0.8rem 1rem; color: #8888aa;
+      border-bottom: 1px solid rgba(255,255,255,0.08); font-weight: 600;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.8rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: top;
+    }
+    tr:hover td { background: rgba(255,215,0,0.02); }
+    .type-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+    }
+    .link-btn {
+      color: #70a1ff; text-decoration: none; font-size: 0.8rem;
+      border: 1px solid rgba(112,161,255,0.3); padding: 0.2rem 0.5rem;
+      border-radius: 6px; transition: all 0.2s; white-space: nowrap;
+    }
+    .link-btn:hover { background: rgba(112,161,255,0.1); }
+    .answer-cell { max-width: 200px; }
+    .answer-item {
+      display: inline-block; background: rgba(255,255,255,0.05);
+      padding: 0.15rem 0.5rem; border-radius: 6px; margin: 0.1rem 0.2rem;
+      font-size: 0.78rem;
+    }
+    .time-cell { color: #8888aa; white-space: nowrap; font-size: 0.8rem; }
+
+    /* pagination */
+    .pagination {
+      display: flex; justify-content: center; align-items: center;
+      gap: 0.5rem; margin-top: 1.5rem;
+    }
+    .page-btn {
+      padding: 0.5rem 1rem; background: #1a1a3e; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; color: #f0f0f0; cursor: pointer; font-family: inherit;
+      font-size: 0.85rem; transition: all 0.2s;
+    }
+    .page-btn:hover { border-color: #ffd700; }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .page-btn.active { background: #ffd700; color: #0a0a1a; border-color: #ffd700; font-weight: 700; }
+    .page-info { font-size: 0.8rem; color: #8888aa; }
+
+    .empty {
+      text-align: center; padding: 3rem; color: #8888aa;
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+    /* detail modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      z-index: 100; display: none; align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #12122a; border-radius: 16px; padding: 2rem;
+      max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;
+      border: 1px solid rgba(255,215,0,0.15);
+    }
+    .modal-close {
+      float: right; background: none; border: none; color: #8888aa;
+      font-size: 1.5rem; cursor: pointer; line-height: 1;
+    }
+    .modal-close:hover { color: #f0f0f0; }
+    .modal h3 { font-size: 1.1rem; margin-bottom: 1rem; }
+    .detail-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      gap: 1rem;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-q { font-size: 0.85rem; color: #8888aa; flex-shrink: 0; max-width: 200px; }
+    .detail-a { font-size: 0.85rem; text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 <span>问卷数据</span>后台</h1>
+      <button class="refresh-btn" onclick="loadAll()">🔄 刷新</button>
+    </div>
+
+    <div class="stats-row" id="statsRow"></div>
+    <div class="dist-section" id="distSection"></div>
+    <div class="table-section" id="tableSection"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- detail modal -->
+  <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+<script>
+const PAGE_SIZE = 20;
+let currentPage = 1;
+let totalPages = 1;
+
+const Q_LABELS = {
+  reaction: '看到"稳赚不赔"的反应',
+  app_count: '钱有关的 App 数量',
+  social: '朋友聊投资时的表现',
+  loss_reaction: '基金跌 5% 的反应',
+  rank: '投资段位自评',
+  midnight_reaction: '半夜刷到利好的反应',
+  assistant_style: '理想理财助手',
+  animal: '投资动物形象',
+  insider_reaction: '亏 30% 时收到内幕消息',
+  best_quality: '身边投资大佬的优点',
+  features: '最想要的功能',
+  ai_dream: 'AI 的一件事',
+  biggest_fear: '最怕的投资情况',
+  association: '"理财"联想到什么',
+  double_reaction: '收益翻倍后第一件事',
+  willing_to_pay: '愿意为工具花多少钱',
+};
+
+const OPTION_MAP = {
+  reaction: ['看到就想找 bug','先搜博主来头','先买 1000 试试','问朋友意见'],
+  social: ['疯狂记笔记','心里盘算靠不靠谱','大方分享','低头吃菜'],
+  loss_reaction: ['立刻卖掉','跌 10% 再考虑','无所谓','加仓！'],
+  rank: ['青铜','白银','黄金','钻石'],
+  midnight_reaction: ['设闹钟明早冲','截图明天研究','看评论区','划走不看'],
+  assistant_style: ['老司机给答案','教练管住手','百科全书有问必答','隐形管家全自动'],
+  animal: ['🦅 老鹰','🐙 章鱼','🐢 乌龟','🐒 猴子'],
+  insider_reaction: ['信了加仓','半信半疑查一查','不信止损','已经麻了'],
+  best_quality: ['信息灵通','心态好','爱学习','果断'],
+  biggest_fear: ['买完就跌','踩雷暴雷','别人赚我不涨','术语看不懂'],
+  double_reaction: ['请朋友吃饭','全部取出','继续投','发朋友圈'],
+  willing_to_pay: ['0 元','9.9 元/月','29.9 元/月','先试试再说'],
+  features: ['AI 体检报告','谣言粉碎机','产业链透视镜','自动交易日记','随身金融词典','研究笔记本'],
+};
+
+const TYPE_COLORS = {
+  '佛系躺平型': '#7bed9f',
+  '知识焦虑型': '#70a1ff',
+  '追涨杀跌型': '#ff4757',
+  '理性研究型': '#ffd700',
+  '社交跟风型': '#a078ff',
+};
+const TYPE_EMOJI = {
+  '佛系躺平型': '🧘',
+  '知识焦虑型': '📚',
+  '追涨杀跌型': '🎢',
+  '理性研究型': '🔬',
+  '社交跟风型': '👥',
+};
+
+async function loadAll() {
+  await Promise.all([loadStats(), loadList()]);
+}
+
+async function loadStats() {
+  try {
+    const data = await (await fetch('/api/stats')).json();
+    const total = data.total;
+
+    // stats cards
+    document.getElementById('statsRow').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">总提交数</div></div>
+      <div class="stat-card"><div class="stat-num">${data.distribution.length}</div><div class="stat-label">人格类型数</div></div>
+      <div class="stat-card"><div class="stat-num">${data.distribution[0] ? JSON.parse(data.distribution[0].personality).emoji : '-'}</div><div class="stat-label">最多类型</div></div>
+    `;
+
+    // distribution bars
+    const maxCount = Math.max(...data.distribution.map(d => d.count), 1);
+    let barsHtml = '<h2>📈 人格分布</h2>';
+    if (total === 0) {
+      barsHtml += '<div style="color:#8888aa;text-align:center;padding:1rem">暂无数据</div>';
+    } else {
+      data.distribution.forEach(d => {
+        const p = JSON.parse(d.personality);
+        const color = TYPE_COLORS[p.name] || '#ffd700';
+        const pct = (d.count / maxCount * 100);
+        barsHtml += `
+          <div class="dist-bar-row">
+            <div class="dist-emoji">${p.emoji}</div>
+            <div class="dist-name">${p.name}</div>
+            <div class="dist-bar-bg">
+              <div class="dist-bar-fill" style="width:${pct}%;background:${color}">${d.count}</div>
+            </div>
+            <div class="dist-count">${Math.round(d.count/total*100)}%</div>
+          </div>`;
+      });
+    }
+    document.getElementById('distSection').innerHTML = barsHtml;
+  } catch (e) {
+    document.getElementById('statsRow').innerHTML = '<div style="color:#ff4757">加载统计失败</div>';
+  }
+}
+
+async function loadList(page) {
+  if (page) currentPage = page;
+  try {
+    const data = await (await fetch(`/api/surveys?page=${currentPage}&size=${PAGE_SIZE}`)).json();
+    totalPages = data.pages || 1;
+
+    const section = document.getElementById('tableSection');
+    if (data.items.length === 0) {
+      section.innerHTML = `
+        <h2>📋 提交记录</h2>
+        <div class="empty"><div class="empty-icon">📭</div>还没有人提交过问卷</div>`;
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    let rows = '';
+    data.items.forEach((item, i) => {
+      const p = item.personality;
+      const color = TYPE_COLORS[p.name] || '#ffd700';
+      const time = item.created_at.replace('T', ' ').slice(0, 16);
+      rows += `
+        <tr>
+          <td>${(currentPage-1)*PAGE_SIZE + i + 1}</td>
+          <td><span class="type-badge" style="background:${color}22;color:${color}">${p.emoji} ${p.name}</span></td>
+          <td class="time-cell">${time}</td>
+          <td><a class="link-btn" href="/r/${item.id}" target="_blank">查看结果</a></td>
+          <td><a class="link-btn" href="#" onclick="showDetail('${item.id}');return false">详细答案</a></td>
+        </tr>`;
+    });
+
+    section.innerHTML = `
+      <h2>📋 提交记录（${data.total} 条）</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>人格类型</th><th>时间</th><th>结果页</th><th>答案</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+
+    // pagination
+    let pagHtml = '';
+    if (totalPages > 1) {
+      pagHtml += `<button class="page-btn" onclick="loadList(${currentPage-1})" ${currentPage<=1?'disabled':''}>← 上一页</button>`;
+      for (let p = 1; p <= totalPages; p++) {
+        pagHtml += `<button class="page-btn ${p===currentPage?'active':''}" onclick="loadList(${p})">${p}</button>`;
+      }
+      pagHtml += `<button class="page-btn" onclick="loadList(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>下一页 →</button>`;
+    }
+    document.getElementById('pagination').innerHTML = pagHtml;
+
+  } catch (e) {
+    document.getElementById('tableSection').innerHTML = '<h2>📋 提交记录</h2><div style="color:#ff4757">加载失败</div>';
+  }
+}
+
+async function showDetail(id) {
+  try {
+    const data = await (await fetch(`/api/survey/${id}`)).json();
+    const p = data.personality;
+    const color = TYPE_COLORS[p.name] || '#ffd700';
+
+    let detailHtml = `
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h3>${p.emoji} ${p.name} · <span style="color:#8888aa;font-size:0.85rem">${data.created_at}</span></h3>
+    `;
+
+    for (const [key, val] of Object.entries(data.answers)) {
+      const label = Q_LABELS[key] || key;
+      let display = '';
+      if (Array.isArray(val)) {
+        const opts = OPTION_MAP[key];
+        display = val.map(v => `<span class="answer-item">${opts ? opts[v] : v}</span>`).join('');
+      } else if (typeof val === 'number' && OPTION_MAP[key]) {
+        display = OPTION_MAP[key][val] || val;
+      } else {
+        display = val;
+      }
+      detailHtml += `<div class="detail-row"><div class="detail-q">${label}</div><div class="detail-a">${display}</div></div>`;
+    }
+
+    document.getElementById('modalContent').innerHTML = detailHtml;
+    document.getElementById('modal').classList.add('show');
+  } catch (e) {
+    alert('加载详情失败');
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+loadAll();
+</script>
+</body>
+</html>

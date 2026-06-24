@@ -7,7 +7,9 @@ const app = express();
 const PORT = process.env.PORT || 3456;
 
 // ── database ──
-const db = new Database(path.join(__dirname, 'survey.db'));
+const fs = require('fs');
+const dbPath = fs.existsSync('/data') ? '/data/survey.db' : path.join(__dirname, 'survey.db');
+const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 db.exec(`
   CREATE TABLE IF NOT EXISTS submissions (

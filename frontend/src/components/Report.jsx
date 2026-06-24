@@ -4,7 +4,7 @@ import { highlightTerms } from '../utils/highlightTerms'
 import TermExplainer from './TermExplainer'
 import styles from './Report.module.css'
 
-export default function Report({ report }) {
+export default function Report({ report, onRefresh }) {
   const [termExplanations, setTermExplanations] = useState({})
   const [activeTerm, setActiveTerm] = useState(null)
   const [loadingTerm, setLoadingTerm] = useState(null)
@@ -40,7 +40,10 @@ export default function Report({ report }) {
   return (
     <div>
       <div className={styles.section}>
-        <div className={styles.sectionLabel}>AI 投 资 体 检 报 告</div>
+        <div className={styles.sectionLabel}>
+          AI 投 资 体 检 报 告
+          {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} title="重新生成报告">↻</button>}
+        </div>
         <div className={styles.reportArea}>
           {highlightTerms(reportText, handleTermClick, styles.term)}
         </div>
