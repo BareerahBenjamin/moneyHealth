@@ -49,6 +49,7 @@ class PortfolioRequest(BaseModel):
     funds: list[FundHolding] = []
     cryptos: list[CryptoHolding] = []
     stocks: list[StockHolding] = []
+    cached_analysis: Optional[dict] = None  # 前端已有的分析数据，避免重复拉取
 
 class ConceptRequest(BaseModel):
     concept: str
@@ -117,40 +118,55 @@ def api_search_stock(keyword: str):
 
 # ----- 投资组合分析 -----
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 @app.post("/api/analyze")
 def api_analyze_portfolio(portfolio: PortfolioRequest):
-    """分析投资组合，返回数据汇总"""
+    """分析投资组合，返回数据汇总（并发拉取）"""
     fund_results = []
     total_fund_value = 0
-    for f in portfolio.funds:
-        info = get_fund_info(f.code)
-        if "error" not in info:
-            info["holding_amount"] = f.amount
-            total_fund_value += f.amount
-        fund_results.append(info)
-
     crypto_results = []
     total_crypto_value_usd = 0
-    if portfolio.cryptos:
-        for c in portfolio.cryptos:
-            detail = get_crypto_detail(c.symbol)
-            if "error" not in detail:
-                current_price = detail.get("price_usd", 0)
-                value_usd = current_price * c.amount
-                total_crypto_value_usd += value_usd
-                detail["holding_amount"] = c.amount
-                detail["value_usd"] = round(value_usd, 2)
-                detail["price_change_24h"] = detail.get("price_change_24h", 0)
-            crypto_results.append(detail)
-
     stock_results = []
     total_stock_value = 0
-    for s in portfolio.stocks:
-        info = get_stock_info(s.code)
-        if "error" not in info:
-            info["holding_amount"] = s.amount
-            total_stock_value += s.amount
-        stock_results.append(info)
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        # 并发提交所有请求
+        futures = {}
+        for f in portfolio.funds:
+            futures[pool.submit(get_fund_info, f.code)] = ("fund", f)
+        for c in portfolio.cryptos:
+            futures[pool.submit(get_crypto_detail, c.symbol)] = ("crypto", c)
+        for s in portfolio.stocks:
+            futures[pool.submit(get_stock_info, s.code)] = ("stock", s)
+
+        # 收集结果
+        for future in as_completed(futures):
+            kind, holding = futures[future]
+            try:
+                info = future.result()
+            except Exception:
+                info = {"error": "请求失败"}
+
+            if kind == "fund":
+                if "error" not in info:
+                    info["holding_amount"] = holding.amount
+                    total_fund_value += holding.amount
+                fund_results.append(info)
+            elif kind == "crypto":
+                if "error" not in info:
+                    current_price = info.get("price_usd", 0)
+                    value_usd = current_price * holding.amount
+                    total_crypto_value_usd += value_usd
+                    info["holding_amount"] = holding.amount
+                    info["value_usd"] = round(value_usd, 2)
+                    info["price_change_24h"] = info.get("price_change_24h", 0)
+                crypto_results.append(info)
+            elif kind == "stock":
+                if "error" not in info:
+                    info["holding_amount"] = holding.amount
+                    total_stock_value += holding.amount
+                stock_results.append(info)
 
     return {
         "funds": fund_results,
@@ -170,12 +186,15 @@ def api_analyze_portfolio(portfolio: PortfolioRequest):
 
 @app.post("/api/report")
 def api_generate_report(portfolio: PortfolioRequest):
-    """生成 AI 体检报告"""
-    # 先获取数据
-    try:
-        analysis = api_analyze_portfolio(portfolio)
-    except Exception as e:
-        return {"report": f"数据获取失败：{str(e)}", "data": {"summary": {}}}
+    """生成 AI 体检报告。如果前端已传 cached_analysis 则直接用，否则重新拉取。"""
+    analysis = portfolio.cached_analysis
+    if analysis and isinstance(analysis.get("funds"), list):
+        pass  # 使用前端传来的缓存数据
+    else:
+        try:
+            analysis = api_analyze_portfolio(portfolio)
+        except Exception as e:
+            return {"report": f"数据获取失败：{str(e)}", "data": {"summary": {}}}
     
     # 构造给 LLM 的摘要
     fund_lines = []

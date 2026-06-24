@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import PortfolioInput from './components/PortfolioInput'
 import Dashboard from './components/Dashboard'
 import Report from './components/Report'
@@ -9,6 +9,31 @@ import HoldingDetail from './components/HoldingDetail'
 import Wiki from './components/Wiki'
 import TradeJournal from './components/TradeJournal'
 import styles from './components/App.module.css'
+
+// 全局错误边界，防止子组件崩溃导致白屏
+class ErrorBoundary extends Component {
+  state = { hasError: false, error: null }
+  static getDerivedStateFromError(error) { return { hasError: true, error } }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+          <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>页面渲染出错</div>
+          <div style={{ color: '#8a7e72', fontSize: 14, marginBottom: 16 }}>
+            {this.state.error?.message || '未知错误'}
+          </div>
+          <button
+            onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
+            style={{ background: 'none', border: '1px solid #cfc4b4', borderRadius: 4, padding: '6px 16px', cursor: 'pointer' }}
+          >
+            刷新页面
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function App() {
   const [page, setPage] = useState('input')
@@ -53,7 +78,7 @@ function App() {
                   if (!report && portfolio.funds.length + portfolio.cryptos.length + portfolio.stocks.length > 0) {
                     setReport({ loading: true })
                     setPage('report')
-                    import('./api').then(({ generateReport }) => generateReport(portfolio)).then(setReport).catch(e => setReport({ error: e.message }))
+                    import('./api').then(({ generateReport }) => generateReport(portfolio, analysis)).then(setReport).catch(e => setReport({ error: e.message }))
                   } else {
                     setPage('report')
                   }
@@ -69,6 +94,7 @@ function App() {
       </header>
 
       <main className={styles.main}>
+        <ErrorBoundary>
         {page === 'input' && (
           <PortfolioInput
             portfolio={portfolio}
@@ -89,7 +115,7 @@ function App() {
               setPage('report')
               try {
                 const { generateReport } = await import('./api')
-                const data = await generateReport(p)
+                const data = await generateReport(p, analysis)
                 setReport(data)
               } catch (e) {
                 setReport({ error: e.message })
@@ -123,7 +149,7 @@ function App() {
               setReport({ loading: true })
               try {
                 const { generateReport } = await import('./api')
-                const data = await generateReport(portfolio)
+                const data = await generateReport(portfolio, analysis)
                 setReport(data)
               } catch (e) {
                 setReport({ error: e.message })
@@ -142,6 +168,7 @@ function App() {
             onBack={() => setPage('dashboard')}
           />
         )}
+        </ErrorBoundary>
       </main>
 
       <footer className={styles.footer}>

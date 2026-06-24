@@ -1,36 +1,57 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
+// 带超时的 fetch（默认 90 秒）
+async function fetchWithTimeout(url, opts = {}, timeoutMs = 90000) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(url, { ...opts, signal: controller.signal })
+    clearTimeout(timer)
+    if (!res.ok) {
+      const text = await res.text().catch(() => '')
+      // 截断过长的错误信息（如 HTML 页面），避免前端渲染异常
+      const msg = text && text.length > 200 ? text.slice(0, 200) + '...' : text
+      throw new Error(msg || `请求失败 (${res.status})`)
+    }
+    return res.json()
+  } catch (e) {
+    clearTimeout(timer)
+    if (e.name === 'AbortError') throw new Error('请求超时，请稍后重试')
+    throw e
+  }
+}
+
 export async function getFundInfo(fundCode) {
-  const res = await fetch(`${API_BASE}/api/fund/${fundCode}`);
-  return res.json();
+  return fetchWithTimeout(`${API_BASE}/api/fund/${fundCode}`)
 }
 
 export async function getCryptoPrice(symbols) {
-  const res = await fetch(`${API_BASE}/api/crypto/price?symbols=${symbols.join(',')}`);
-  return res.json();
+  return fetchWithTimeout(`${API_BASE}/api/crypto/price?symbols=${symbols.join(',')}`)
 }
 
 export async function getCryptoDetail(symbol) {
-  const res = await fetch(`${API_BASE}/api/crypto/${symbol}`);
-  return res.json();
+  return fetchWithTimeout(`${API_BASE}/api/crypto/${symbol}`)
 }
 
 export async function analyzePortfolio(portfolio) {
-  const res = await fetch(`${API_BASE}/api/analyze`, {
+  return fetchWithTimeout(`${API_BASE}/api/analyze`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(portfolio),
-  });
-  return res.json();
+  })
 }
 
-export async function generateReport(portfolio) {
-  const res = await fetch(`${API_BASE}/api/report`, {
+export async function generateReport(portfolio, existingAnalysis = null) {
+  const body = { ...portfolio }
+  // 如果已有分析数据，一起传给后端避免重复拉取
+  if (existingAnalysis && existingAnalysis.funds) {
+    body.cached_analysis = existingAnalysis
+  }
+  return fetchWithTimeout(`${API_BASE}/api/report`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(portfolio),
-  });
-  return res.json();
+    body: JSON.stringify(body),
+  }, 120000)
 }
 
 export async function explainConcept(concept) {
