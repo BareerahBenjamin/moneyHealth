@@ -14,7 +14,13 @@ PLURAL = {v: k for k, v in SINGULAR.items()}
 
 def _to_singular(entry_type: str) -> str:
     """复数 -> 单数"""
-    return SINGULAR.get(entry_type, entry_type.rstrip("s"))
+    if entry_type in SINGULAR:
+        return SINGULAR[entry_type]
+    if entry_type.endswith("ies"):
+        return entry_type[:-3] + "y"
+    if entry_type.endswith("s"):
+        return entry_type[:-1]
+    return entry_type
 
 
 def _to_plural(entry_type: str) -> str:

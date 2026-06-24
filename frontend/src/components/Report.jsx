@@ -1,9 +1,21 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { explainConcept } from '../api'
 import { highlightTerms } from '../utils/highlightTerms'
 import TermExplainer from './TermExplainer'
 import styles from './Report.module.css'
+
+// 错误边界：防止 ReactMarkdown 崩溃导致白屏
+class MarkdownBoundary extends Component {
+  state = { hasError: false }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() {
+    if (this.state.hasError) {
+      return <div className={styles.loading}>报告渲染出错，请刷新重试</div>
+    }
+    return this.props.children
+  }
+}
 
 export default function Report({ report, onRefresh }) {
   const [termExplanations, setTermExplanations] = useState({})
@@ -34,9 +46,22 @@ export default function Report({ report, onRefresh }) {
     </div>
   )
   if (report.loading) return <div className={styles.loading}>AI 正在分析你的投资组合</div>
-  if (report.error) return <div className={styles.loading}>出错了：{report.error}</div>
+  if (report.error) return (
+    <div className={styles.empty}>
+      <div className={styles.emptyTitle}>出错了</div>
+      <div className={styles.emptyDesc}>{report.error}</div>
+      {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} style={{marginTop: 16}}>重试</button>}
+    </div>
+  )
 
-  const reportText = report.report || '报告生成中...'
+  const reportText = report.report
+  if (!reportText) return (
+    <div className={styles.empty}>
+      <div className={styles.emptyTitle}>报告内容为空</div>
+      <div className={styles.emptyDesc}>AI 未能生成报告，请重试</div>
+      {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} style={{marginTop: 16}}>重试</button>}
+    </div>
+  )
 
   // 自定义 markdown 组件，支持术语高亮
   const markdownComponents = useMemo(() => ({
@@ -54,7 +79,9 @@ export default function Report({ report, onRefresh }) {
           {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} title="重新生成报告">↻</button>}
         </div>
         <div className={styles.reportArea}>
-          <ReactMarkdown components={markdownComponents}>{reportText}</ReactMarkdown>
+          <MarkdownBoundary>
+            <ReactMarkdown components={markdownComponents}>{reportText}</ReactMarkdown>
+          </MarkdownBoundary>
         </div>
         {activeTerm && (
           <TermExplainer

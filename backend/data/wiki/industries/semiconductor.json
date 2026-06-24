@@ -1,0 +1,38 @@
+{
+    "name": "\u534a\u5bfc\u4f53",
+    "summary": "AI\u9a71\u52a8\u7684\u534a\u5bfc\u4f53\u8d85\u7ea7\u5468\u671f\uff0c\u56fd\u4ea7\u66ff\u4ee3\u52a0\u901f\u30022025\u5e74\u5168\u7403\u534a\u5bfc\u4f53\u5e02\u573a\u89c4\u6a21\u8d856,000\u4ebf\u7f8e\u5143\u3002",
+    "valueChain": "\u8bbe\u5907(ASML/\u5317\u65b9\u534e\u521b) \u2192 \u8bbe\u8ba1(\u6d77\u601d/\u5bd2\u6b66\u7eaa) \u2192 \u5236\u9020(\u53f0\u79ef\u7535/\u4e2d\u82af\u56fd\u9645) \u2192 \u5c01\u6d4b(\u957f\u7535\u79d1\u6280)",
+    "keyPlayers": [
+        "\u4e2d\u82af\u56fd\u9645",
+        "\u5317\u65b9\u534e\u521b",
+        "\u97e6\u5c14\u80a1\u4efd",
+        "\u5bd2\u6b66\u7eaa",
+        "\u957f\u7535\u79d1\u6280"
+    ],
+    "trends": [
+        "AI\u7b97\u529b\u9700\u6c42\u7206\u53d1\uff0cHBM/\u5148\u8fdb\u5c01\u88c5\u4f9b\u4e0d\u5e94\u6c42",
+        "\u56fd\u4ea7\u66ff\u4ee3\u52a0\u901f\uff0c\u6210\u719f\u5236\u7a0b\u6269\u4ea7",
+        "Chiplet/3D\u5c01\u88c5\u6280\u672f\u7a81\u7834"
+    ],
+    "risks": [
+        "\u7f8e\u56fd\u51fa\u53e3\u7ba1\u5236\u5347\u7ea7",
+        "\u5468\u671f\u6027\u6ce2\u52a8",
+        "\u6280\u672f\u8ffd\u8d76\u5dee\u8ddd"
+    ],
+    "notes": [
+        "\u6570\u636e\u6765\u6e90\uff1aSIA\u3001IC Insights\u3001\u516c\u53f8\u516c\u544a"
+    ],
+    "changelog": [
+        {
+            "date": "2026-06-24 09:59",
+            "action": "updated"
+        },
+        {
+            "date": "2026-06-24 09:45",
+            "action": "created"
+        }
+    ],
+    "lastUpdated": "2026-06-24",
+    "id": "semiconductor",
+    "type": "industry"
+}

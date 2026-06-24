@@ -1,0 +1,18 @@
+[
+  {
+    "id": "ba75cdda",
+    "date": "2026-06-20",
+    "account": "FUTU",
+    "ticker": "600519",
+    "tickerType": "stock",
+    "direction": "buy",
+    "quantity": 100.0,
+    "costPrice": 1680.5,
+    "currency": "CNY",
+    "amount": 168050.0,
+    "sourceFramework": "framework:moat-scoring",
+    "thesisId": "",
+    "notes": "茅台建仓",
+    "createdAt": "2026-06-24 12:33"
+  }
+]

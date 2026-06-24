@@ -17,6 +17,7 @@ def get_client():
     return OpenAI(
         base_url=os.getenv("LLM_BASE_URL", "https://api.vectorengine.ai/v1"),
         api_key=os.getenv("LLM_API_KEY", "placeholder"),
+        timeout=60.0,
     )
 
 SYSTEM_PROMPT = """你是一位专业但亲切的理财翻译官，专门把复杂的投资数据用人话解释给投资小白听。

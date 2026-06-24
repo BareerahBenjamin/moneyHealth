@@ -1,8 +1,23 @@
 """股票数据服务 - 使用东方财富 API 获取 A 股数据"""
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 EASTMONEY_KLINE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 EASTMONEY_SPOT = "https://push2.eastmoney.com/api/qt/clist/get"
+
+_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Referer": "https://quote.eastmoney.com/",
+}
+
+def _make_session():
+    """创建带重试的 requests session"""
+    s = requests.Session()
+    retries = Retry(total=3, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+    s.mount("https://", HTTPAdapter(max_retries=retries))
+    s.headers.update(_HEADERS)
+    return s
 
 def _secid(code: str) -> str:
     """根据股票代码生成 secid（东方财富格式）"""
@@ -15,7 +30,8 @@ def get_stock_info(code: str) -> dict:
     """获取单只股票基础信息和近期行情"""
     try:
         secid = _secid(code)
-        resp = requests.get(EASTMONEY_KLINE, params={
+        session = _make_session()
+        resp = session.get(EASTMONEY_KLINE, params={
             "secid": secid,
             "klt": "101",       # 日K
             "fqt": "1",         # 前复权
@@ -24,7 +40,7 @@ def get_stock_info(code: str) -> dict:
             "fields1": "f1,f2,f3,f4,f5,f6",
             "fields2": "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
             "ut": "7eea3edcaed734bea9cbfc24409ed989",
-        }, timeout=10)
+        }, timeout=15)
         resp.raise_for_status()
         data = resp.json()
 
@@ -100,7 +116,8 @@ def get_stock_info(code: str) -> dict:
 def search_stock(keyword: str) -> list:
     """搜索股票（通过东方财富实时行情接口）"""
     try:
-        resp = requests.get(EASTMONEY_SPOT, params={
+        session = _make_session()
+        resp = session.get(EASTMONEY_SPOT, params={
             "pn": "1",
             "pz": "10",
             "po": "1",

@@ -1,0 +1,34 @@
+{
+    "name": "\u5927\u6d88\u8d39",
+    "summary": "\u767d\u9152\u3001\u98df\u54c1\u996e\u6599\u3001\u5bb6\u7535\u3001\u533b\u7f8e\u7b49\u5185\u9700\u6d88\u8d39\u677f\u5757\u3002\u4e2d\u56fd\u7ecf\u6d4e\u8f6c\u578b\u7684\u6838\u5fc3\u9a71\u52a8\u529b\u3002",
+    "valueChain": "\u539f\u6599 \u2192 \u54c1\u724c\u5546 \u2192 \u6e20\u9053(\u7ebf\u4e0a+\u7ebf\u4e0b) \u2192 \u6d88\u8d39\u8005",
+    "keyPlayers": [
+        "\u8d35\u5dde\u8305\u53f0",
+        "\u4f0a\u5229\u80a1\u4efd",
+        "\u6d77\u5c14\u667a\u5bb6",
+        "\u73c0\u83b1\u96c5",
+        "\u6d77\u5e95\u635e"
+    ],
+    "trends": [
+        "\u6d88\u8d39\u5206\u7ea7\uff0c\u9ad8\u7aef\u4e0e\u6027\u4ef7\u6bd4\u5e76\u884c",
+        "\u56fd\u8d27\u5d1b\u8d77\uff0c\u54c1\u724c\u5347\u7ea7",
+        "\u76f4\u64ad\u7535\u5546\u91cd\u5851\u6e20\u9053"
+    ],
+    "risks": [
+        "\u6d88\u8d39\u590d\u82cf\u4e0d\u53ca\u9884\u671f",
+        "\u4eba\u53e3\u7ed3\u6784\u53d8\u5316",
+        "\u539f\u6750\u6599\u6210\u672c\u6ce2\u52a8"
+    ],
+    "notes": [
+        "\u6570\u636e\u6765\u6e90\uff1a\u56fd\u5bb6\u7edf\u8ba1\u5c40\u3001Euromonitor"
+    ],
+    "changelog": [
+        {
+            "date": "2026-06-24 09:59",
+            "action": "created"
+        }
+    ],
+    "lastUpdated": "2026-06-24",
+    "id": "consumer",
+    "type": "industry"
+}

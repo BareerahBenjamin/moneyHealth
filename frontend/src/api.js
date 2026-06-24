@@ -113,11 +113,6 @@ export async function searchWiki(q) {
   return res.json();
 }
 
-export async function getWikiLog(limit = 20) {
-  const res = await fetch(`${API_BASE}/api/wiki/log?limit=${limit}`);
-  return res.json();
-}
-
 // ========== 交易日志 ==========
 
 export async function getTrades(filters = {}) {

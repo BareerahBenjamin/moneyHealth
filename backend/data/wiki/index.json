@@ -1,0 +1,79 @@
+{
+    "lastUpdated": "2026-06-24",
+    "companies": [
+        {
+            "id": "600519",
+            "name": "\u8d35\u5dde\u8305\u53f0",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "000001",
+            "name": "\u5e73\u5b89\u94f6\u884c",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "600036",
+            "name": "\u62db\u5546\u94f6\u884c",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "300750",
+            "name": "\u5b81\u5fb7\u65f6\u4ee3",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "002594",
+            "name": "\u6bd4\u4e9a\u8fea",
+            "lastUpdated": "2026-06-24"
+        }
+    ],
+    "industries": [
+        {
+            "id": "semiconductor",
+            "name": "\u534a\u5bfc\u4f53",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "ai-infra",
+            "name": "AI\u57fa\u7840\u8bbe\u65bd",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "new-energy",
+            "name": "\u65b0\u80fd\u6e90",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "consumer",
+            "name": "\u5927\u6d88\u8d39",
+            "lastUpdated": "2026-06-24"
+        }
+    ],
+    "frameworks": [
+        {
+            "id": "value-investing",
+            "name": "\u4ef7\u503c\u6295\u8d44\u6846\u67b6",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "growth-investing",
+            "name": "\u6210\u957f\u6295\u8d44\u6846\u67b6",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "industry-analysis",
+            "name": "\u884c\u4e1a\u5206\u6790\u4e94\u529b\u6a21\u578b",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "claim-verification",
+            "name": "\u6295\u8d44\u4fe1\u606f\u6838\u5b9e\u65b9\u6cd5\u8bba",
+            "lastUpdated": "2026-06-24"
+        },
+        {
+            "id": "risk-management",
+            "name": "\u98ce\u9669\u7ba1\u7406\u6846\u67b6",
+            "lastUpdated": "2026-06-24"
+        }
+    ]
+}

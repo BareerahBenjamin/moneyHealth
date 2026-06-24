@@ -1,0 +1,32 @@
+{
+    "name": "\u62db\u5546\u94f6\u884c",
+    "summary": "\u96f6\u552e\u94f6\u884c\u6807\u6746\uff0cA\u80a1\u94f6\u884c\u4f30\u503c\u5929\u82b1\u677f\u30022025\u5e74\u8425\u6536\u7ea63,400\u4ebf\u5143\uff0c\u51c0\u5229\u6da6\u7ea61,500\u4ebf\u5143\u3002",
+    "bull": [
+        "\u96f6\u552e\u4e4b\u738b\uff0c\u5ba2\u6237\u7c98\u6027\u5f3a",
+        "\u8d44\u4ea7\u8d28\u91cf\u4f18\u5f02\uff0c\u4e0d\u826f\u7387\u4f4e",
+        "\u8d22\u5bcc\u7ba1\u7406\u62a4\u57ce\u6cb3\u6df1"
+    ],
+    "bear": [
+        "\u5b8f\u89c2\u7ecf\u6d4e\u4e0b\u884c\u538b\u529b",
+        "\u5229\u7387\u5e02\u573a\u5316\u6324\u538b\u606f\u5dee",
+        "\u96f6\u552e\u4fe1\u8d37\u98ce\u9669\u4e0a\u5347"
+    ],
+    "score": {
+        "moat": 4,
+        "growth": 3,
+        "risk": 2,
+        "valuation": 3
+    },
+    "notes": [
+        "\u6570\u636e\u6765\u6e90\uff1a\u516c\u53f8\u5e74\u62a5"
+    ],
+    "changelog": [
+        {
+            "date": "2026-06-24 09:59",
+            "action": "created"
+        }
+    ],
+    "lastUpdated": "2026-06-24",
+    "id": "600036",
+    "type": "company"
+}

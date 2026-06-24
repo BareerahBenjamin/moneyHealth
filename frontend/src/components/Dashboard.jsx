@@ -20,7 +20,7 @@ export default function Dashboard({ analysis, onRefresh, onSelectHolding }) {
           <button className={styles.refreshBtn} onClick={onRefresh} title="刷新数据">↻</button>
         </div>
         <div className={styles.totalValue}>
-          ¥{((summary.total_fund_value_cny || 0) + (summary.total_stock_value_cny || 0)).toLocaleString()}
+          ¥{((summary.total_fund_value_cny || 0) + (summary.total_stock_value_cny || 0) + (summary.total_crypto_value_usd || 0) * 7.25).toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </div>
         <div className={styles.breakdown}>
           <div className={styles.breakdownItem}>

@@ -34,7 +34,6 @@ Thumbs.db
 *.log
 
 # Data (user-generated, don't track)
-backend/data/
 survey/survey.db
 survey/survey.db-wal
 survey/survey.db-shm

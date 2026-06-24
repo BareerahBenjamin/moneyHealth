@@ -12,7 +12,7 @@ from services.fund_service import get_fund_info
 from services.crypto_service import get_crypto_price, get_crypto_detail
 from services.stock_service import get_stock_info
 from services.llm_service import generate_health_report, explain_concept, verify_claims, analyze_supply_chain
-from services.wiki_service import get_index, get_entry, save_entry, delete_entry, list_entries, search_entries, get_log, add_log
+from services.wiki_service import get_index, get_entry, save_entry, delete_entry, list_entries, search_entries
 from services.trade_service import get_trades, add_trade, get_trade_stats, get_pnl
 
 load_dotenv()
@@ -172,7 +172,10 @@ def api_analyze_portfolio(portfolio: PortfolioRequest):
 def api_generate_report(portfolio: PortfolioRequest):
     """生成 AI 体检报告"""
     # 先获取数据
-    analysis = api_analyze_portfolio(portfolio)
+    try:
+        analysis = api_analyze_portfolio(portfolio)
+    except Exception as e:
+        return {"report": f"数据获取失败：{str(e)}", "data": {"summary": {}}}
     
     # 构造给 LLM 的摘要
     fund_lines = []
@@ -250,11 +253,6 @@ def api_wiki_index():
 def api_wiki_search(q: str):
     """搜索研究知识库"""
     return {"results": search_entries(q)}
-
-@app.get("/api/wiki/log")
-def api_wiki_log(limit: int = 20):
-    """获取活动日志"""
-    return {"log": get_log(limit)}
 
 @app.get("/api/wiki/{entry_type}")
 def api_wiki_list(entry_type: str):
