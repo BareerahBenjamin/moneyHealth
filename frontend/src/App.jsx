@@ -1,4 +1,5 @@
-import { useState, Component } from 'react'
+import { useState, useEffect, Component } from 'react'
+import { API_BASE } from './api'
 import PortfolioInput from './components/PortfolioInput'
 import Dashboard from './components/Dashboard'
 import Report from './components/Report'
@@ -41,6 +42,11 @@ function App() {
   const [analysis, setAnalysis] = useState(null)
   const [report, setReport] = useState(null)
   const [selectedHolding, setSelectedHolding] = useState(null)
+
+  // 预热后端（Fly.dev 冷启动时首次请求会很慢）
+  useEffect(() => {
+    fetch(`${API_BASE}/api/health`).catch(() => {})
+  }, [])
 
   const navItems = [
     { key: 'input', label: '录入持仓' },

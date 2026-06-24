@@ -1,8 +1,21 @@
 import { useState, useRef, useCallback, useMemo, Component } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { explainConcept } from '../api'
 import { highlightTerms } from '../utils/highlightTerms'
 import TermExplainer from './TermExplainer'
 import styles from './Report.module.css'
+
+// 错误边界：防止 ReactMarkdown 崩溃导致白屏
+class MarkdownBoundary extends Component {
+  state = { hasError: false }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() {
+    if (this.state.hasError) {
+      return <div className={styles.loading}>报告渲染出错，请刷新重试</div>
+    }
+    return this.props.children
+  }
+}
 
 export default function Report({ report, onRefresh }) {
   // ── 所有 hooks 必须在 early return 之前 ──
@@ -83,7 +96,9 @@ export default function Report({ report, onRefresh }) {
           {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} title="重新生成报告">↻</button>}
         </div>
         <div className={styles.reportArea}>
-          <div dangerouslySetInnerHTML={{ __html: reportText.replace(/\n/g, '<br/>') }} />
+          <MarkdownBoundary>
+            <ReactMarkdown components={markdownComponents}>{reportText}</ReactMarkdown>
+          </MarkdownBoundary>
         </div>
         {activeTerm && (
           <TermExplainer

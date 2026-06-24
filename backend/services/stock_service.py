@@ -1,5 +1,8 @@
 """股票数据服务 - 雅虎财经主源 + akshare 兜底，兼容海外服务器"""
+import logging
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 def _yahoo_symbol(code: str) -> str:
@@ -29,10 +32,10 @@ def _load_name_map():
                     df["name"].astype(str).str.replace(" ", "", regex=False)
                 ))
                 return _name_cache
-    except Exception:
-        pass
-    _name_cache = {}
-    return _name_cache
+    except Exception as e:
+        logger.warning("加载股票名称表失败: %s", e)
+    # 失败时不缓存（_name_cache 保持 None），下次调用会重试
+    return {}
 
 
 def _fetch_yahoo(code: str) -> pd.DataFrame:
@@ -51,6 +54,14 @@ def _fetch_yahoo(code: str) -> pd.DataFrame:
     return None
 
 
+def _normalize_df(df: pd.DataFrame) -> pd.DataFrame:
+    """统一列名为小写，确保 date 列存在"""
+    df.columns = [c.lower() for c in df.columns]
+    if "date" not in df.columns:
+        df = df.rename(columns={df.columns[0]: "date"})
+    return df
+
+
 def _fetch_akshare(code: str) -> pd.DataFrame:
     """akshare 兜底（Sina → 腾讯）"""
     import akshare as ak
@@ -59,25 +70,28 @@ def _fetch_akshare(code: str) -> pd.DataFrame:
     try:
         df = ak.stock_zh_a_daily(symbol=symbol_sz, adjust="qfq")
         if df is not None and not df.empty:
-            return df
-    except Exception:
-        pass
+            return _normalize_df(df)
+    except Exception as e:
+        logger.warning("akshare Sina 源失败 (%s): %s", code, e)
 
     try:
         df = ak.stock_zh_a_hist_tx(symbol=symbol_sz, start_date="20240101", end_date="20500101")
         if df is not None and not df.empty:
-            return df
-    except Exception:
-        pass
+            return _normalize_df(df)
+    except Exception as e:
+        logger.warning("akshare 腾讯源失败 (%s): %s", code, e)
 
     return None
 
 
 def _fetch_daily(code: str) -> pd.DataFrame:
     """多源拉取日K线：雅虎 → akshare"""
-    df = _fetch_yahoo(code)
-    if df is not None and not df.empty:
-        return df
+    try:
+        df = _fetch_yahoo(code)
+        if df is not None and not df.empty:
+            return df
+    except Exception as e:
+        logger.warning("雅虎财经失败 (%s): %s", code, e)
     return _fetch_akshare(code)
 
 

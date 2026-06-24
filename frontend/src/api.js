@@ -1,22 +1,34 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
+export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
-// 带超时的 fetch（默认 90 秒）
+// 带超时和重试的 fetch（冷启动时第一次请求可能失败）
+// 仅对 GET 请求重试，避免 POST 产生重复副作用
 async function fetchWithTimeout(url, opts = {}, timeoutMs = 90000) {
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
-  try {
-    const res = await fetch(url, { ...opts, signal: controller.signal })
-    clearTimeout(timer)
-    if (!res.ok) {
-      const text = await res.text().catch(() => '')
-      const msg = text && text.length > 200 ? text.slice(0, 200) + '...' : text
-      throw new Error(msg || `请求失败 (${res.status})`)
+  const isGet = !opts.method || opts.method.toUpperCase() === 'GET'
+  const maxAttempts = isGet ? 2 : 1
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      const res = await fetch(url, { ...opts, signal: controller.signal })
+      clearTimeout(timer)
+      if (!res.ok) {
+        const text = await res.text().catch(() => '')
+        const msg = text && text.length > 200 ? text.slice(0, 200) + '...' : text
+        throw new Error(msg || `请求失败 (${res.status})`)
+      }
+      return res.json()
+    } catch (e) {
+      clearTimeout(timer)
+      // 网络错误或超时时重试一次（GET 请求，可能是冷启动）
+      const isRetryable = e.name === 'AbortError' || e instanceof TypeError
+      if (attempt < maxAttempts - 1 && isRetryable) {
+        await new Promise(r => setTimeout(r, 2000))
+        continue
+      }
+      if (e.name === 'AbortError') throw new Error('请求超时，请稍后重试')
+      throw e
     }
-    return res.json()
-  } catch (e) {
-    clearTimeout(timer)
-    if (e.name === 'AbortError') throw new Error('请求超时，请稍后重试')
-    throw e
   }
 }
 
