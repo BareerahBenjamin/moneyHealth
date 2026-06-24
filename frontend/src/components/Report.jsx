@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, Component } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo, Component } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { explainConcept } from '../api'
 import { highlightTerms } from '../utils/highlightTerms'
@@ -22,13 +22,18 @@ export default function Report({ report, onRefresh }) {
   const [activeTerm, setActiveTerm] = useState(null)
   const [loadingTerm, setLoadingTerm] = useState(null)
 
+  // 用 ref 持有最新状态，避免回调依赖变化导致无限渲染
+  const stateRef = useRef({ activeTerm, termExplanations })
+  stateRef.current = { activeTerm, termExplanations }
+
   const handleTermClick = useCallback(async (term) => {
-    if (activeTerm === term) {
+    const { activeTerm: current, termExplanations: explanations } = stateRef.current
+    if (current === term) {
       setActiveTerm(null)
       return
     }
     setActiveTerm(term)
-    if (termExplanations[term]) return
+    if (explanations[term]) return
     setLoadingTerm(term)
     try {
       const data = await explainConcept(term)
@@ -37,7 +42,7 @@ export default function Report({ report, onRefresh }) {
       setTermExplanations(prev => ({ ...prev, [term]: '暂时无法解释，稍后再试试～' }))
     }
     setLoadingTerm(null)
-  }, [activeTerm, termExplanations])
+  }, []) // 稳定引用，永不变化
 
   if (!report) return (
     <div className={styles.empty}>
@@ -65,11 +70,23 @@ export default function Report({ report, onRefresh }) {
 
   // 自定义 markdown 组件，支持术语高亮
   const markdownComponents = useMemo(() => ({
-    p: ({ children }) => <p>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</p>,
-    li: ({ children }) => <li>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</li>,
-    td: ({ children }) => <td>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</td>,
-    th: ({ children }) => <th>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</th>,
-  }), [handleTermClick])
+    p(props) {
+      const { children, node, ...rest } = props
+      return <p {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</p>
+    },
+    li(props) {
+      const { children, node, ...rest } = props
+      return <li {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</li>
+    },
+    td(props) {
+      const { children, node, ...rest } = props
+      return <td {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</td>
+    },
+    th(props) {
+      const { children, node, ...rest } = props
+      return <th {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</th>
+    },
+  }), [handleTermClick]) // handleTermClick 现在是稳定引用
 
   return (
     <div>

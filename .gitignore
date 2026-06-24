@@ -33,6 +33,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Build cache
+.vite/
+
 # Data (user-generated, don't track)
 survey/survey.db
 survey/survey.db-wal
