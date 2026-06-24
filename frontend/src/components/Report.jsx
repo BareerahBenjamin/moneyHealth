@@ -1,28 +1,15 @@
-import { useState, useRef, useEffect, useCallback, useMemo, Component } from 'react'
-import ReactMarkdown from 'react-markdown'
+import { useState, useRef, useCallback, useMemo, Component } from 'react'
 import { explainConcept } from '../api'
 import { highlightTerms } from '../utils/highlightTerms'
 import TermExplainer from './TermExplainer'
 import styles from './Report.module.css'
 
-// 错误边界：防止 ReactMarkdown 崩溃导致白屏
-class MarkdownBoundary extends Component {
-  state = { hasError: false }
-  static getDerivedStateFromError() { return { hasError: true } }
-  render() {
-    if (this.state.hasError) {
-      return <div className={styles.loading}>报告渲染出错，请刷新重试</div>
-    }
-    return this.props.children
-  }
-}
-
 export default function Report({ report, onRefresh }) {
+  // ── 所有 hooks 必须在 early return 之前 ──
   const [termExplanations, setTermExplanations] = useState({})
   const [activeTerm, setActiveTerm] = useState(null)
   const [loadingTerm, setLoadingTerm] = useState(null)
 
-  // 用 ref 持有最新状态，避免回调依赖变化导致无限渲染
   const stateRef = useRef({ activeTerm, termExplanations })
   stateRef.current = { activeTerm, termExplanations }
 
@@ -42,8 +29,28 @@ export default function Report({ report, onRefresh }) {
       setTermExplanations(prev => ({ ...prev, [term]: '暂时无法解释，稍后再试试～' }))
     }
     setLoadingTerm(null)
-  }, []) // 稳定引用，永不变化
+  }, [])
 
+  const markdownComponents = useMemo(() => ({
+    p(props) {
+      const { children, node, ...rest } = props
+      return <p {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</p>
+    },
+    li(props) {
+      const { children, node, ...rest } = props
+      return <li {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</li>
+    },
+    td(props) {
+      const { children, node, ...rest } = props
+      return <td {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</td>
+    },
+    th(props) {
+      const { children, node, ...rest } = props
+      return <th {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</th>
+    },
+  }), [handleTermClick])
+
+  // ── early return 在 hooks 之后 ──
   if (!report) return (
     <div className={styles.empty}>
       <div className={styles.emptyTitle}>还没有 AI 报告</div>
@@ -67,26 +74,6 @@ export default function Report({ report, onRefresh }) {
       {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} style={{marginTop: 16}}>重试</button>}
     </div>
   )
-
-  // 自定义 markdown 组件，支持术语高亮
-  const markdownComponents = useMemo(() => ({
-    p(props) {
-      const { children, node, ...rest } = props
-      return <p {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</p>
-    },
-    li(props) {
-      const { children, node, ...rest } = props
-      return <li {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</li>
-    },
-    td(props) {
-      const { children, node, ...rest } = props
-      return <td {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</td>
-    },
-    th(props) {
-      const { children, node, ...rest } = props
-      return <th {...rest}>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</th>
-    },
-  }), [handleTermClick]) // handleTermClick 现在是稳定引用
 
   return (
     <div>
