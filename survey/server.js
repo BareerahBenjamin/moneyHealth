@@ -23,6 +23,7 @@ db.exec(`
 const insertStmt = db.prepare('INSERT INTO submissions (id, answers, personality) VALUES (?, ?, ?)');
 const getStmt = db.prepare('SELECT * FROM submissions WHERE id = ?');
 const listStmt = db.prepare('SELECT id, personality, created_at FROM submissions ORDER BY created_at DESC LIMIT ? OFFSET ?');
+const allStmt = db.prepare('SELECT * FROM submissions ORDER BY created_at DESC');
 const countStmt = db.prepare('SELECT COUNT(*) as total FROM submissions');
 const statsStmt = db.prepare(`
   SELECT personality, COUNT(*) as count
@@ -61,7 +62,7 @@ app.get('/api/survey/:id', (req, res) => {
 
 // ── GET /api/surveys?page=1&size=20 ──
 app.get('/api/surveys', (req, res) => {
-  const page = Math.max(1, parseInt(req.params.page) || 1);
+  const page = Math.max(1, parseInt(req.query.page) || 1);
   const size = Math.min(100, Math.max(1, parseInt(req.query.size) || 20));
   const offset = (page - 1) * size;
   const total = countStmt.get().total;
@@ -77,6 +78,17 @@ app.get('/api/surveys', (req, res) => {
       created_at: r.created_at,
     })),
   });
+});
+
+// ── GET /api/surveys/all ──
+app.get('/api/surveys/all', (req, res) => {
+  const rows = allStmt.all();
+  res.json(rows.map(r => ({
+    id: r.id,
+    answers: JSON.parse(r.answers),
+    personality: JSON.parse(r.personality),
+    created_at: r.created_at,
+  })));
 });
 
 // ── GET /api/stats ──

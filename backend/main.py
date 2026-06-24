@@ -132,7 +132,6 @@ def api_analyze_portfolio(portfolio: PortfolioRequest):
     crypto_results = []
     total_crypto_value_usd = 0
     if portfolio.cryptos:
-        price_data = get_crypto_price([c.symbol for c in portfolio.cryptos])
         for c in portfolio.cryptos:
             detail = get_crypto_detail(c.symbol)
             if "error" not in detail:

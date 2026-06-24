@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { explainConcept } from '../api'
 import { highlightTerms } from '../utils/highlightTerms'
 import TermExplainer from './TermExplainer'
@@ -37,6 +38,14 @@ export default function Report({ report, onRefresh }) {
 
   const reportText = report.report || '报告生成中...'
 
+  // 自定义 markdown 组件，支持术语高亮
+  const markdownComponents = useMemo(() => ({
+    p: ({ children }) => <p>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</p>,
+    li: ({ children }) => <li>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</li>,
+    td: ({ children }) => <td>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</td>,
+    th: ({ children }) => <th>{typeof children === 'string' ? highlightTerms(children, handleTermClick, styles.term) : children}</th>,
+  }), [handleTermClick])
+
   return (
     <div>
       <div className={styles.section}>
@@ -45,7 +54,7 @@ export default function Report({ report, onRefresh }) {
           {onRefresh && <button className={styles.refreshBtn} onClick={onRefresh} title="重新生成报告">↻</button>}
         </div>
         <div className={styles.reportArea}>
-          {highlightTerms(reportText, handleTermClick, styles.term)}
+          <ReactMarkdown components={markdownComponents}>{reportText}</ReactMarkdown>
         </div>
         {activeTerm && (
           <TermExplainer

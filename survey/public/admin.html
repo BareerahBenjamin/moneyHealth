@@ -14,18 +14,19 @@
     }
     .container { max-width: 1000px; margin: 0 auto; }
 
-    /* header */
     .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
     .header h1 { font-size: 1.6rem; font-weight: 900; }
     .header h1 span { color: #ffd700; }
-    .refresh-btn {
+    .header-actions { display: flex; gap: 0.5rem; }
+    .btn {
       padding: 0.6rem 1.2rem; background: #1a1a3e; border: 1px solid rgba(255,255,255,0.1);
       border-radius: 10px; color: #f0f0f0; cursor: pointer; font-family: inherit;
       font-size: 0.85rem; transition: all 0.2s;
     }
-    .refresh-btn:hover { border-color: #ffd700; color: #ffd700; }
+    .btn:hover { border-color: #ffd700; color: #ffd700; }
+    .btn-export { background: rgba(123,237,159,0.1); border-color: rgba(123,237,159,0.3); color: #7bed9f; }
+    .btn-export:hover { background: rgba(123,237,159,0.2); border-color: #7bed9f; }
 
-    /* stats cards */
     .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
     .stat-card {
       background: #12122a; border-radius: 14px; padding: 1.2rem;
@@ -34,7 +35,6 @@
     .stat-num { font-size: 2rem; font-weight: 900; color: #ffd700; }
     .stat-label { font-size: 0.8rem; color: #8888aa; margin-top: 0.2rem; }
 
-    /* distribution chart */
     .dist-section {
       background: #12122a; border-radius: 14px; padding: 1.5rem;
       border: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem;
@@ -45,7 +45,7 @@
     .dist-name { font-size: 0.85rem; width: 100px; flex-shrink: 0; }
     .dist-bar-bg {
       flex: 1; height: 24px; background: rgba(255,255,255,0.04);
-      border-radius: 6px; overflow: hidden; position: relative;
+      border-radius: 6px; overflow: hidden;
     }
     .dist-bar-fill {
       height: 100%; border-radius: 6px; transition: width 1s ease;
@@ -54,7 +54,6 @@
     }
     .dist-count { font-size: 0.85rem; color: #8888aa; width: 40px; text-align: right; }
 
-    /* table */
     .table-section {
       background: #12122a; border-radius: 14px; padding: 1.5rem;
       border: 1px solid rgba(255,255,255,0.05);
@@ -82,15 +81,8 @@
       border-radius: 6px; transition: all 0.2s; white-space: nowrap;
     }
     .link-btn:hover { background: rgba(112,161,255,0.1); }
-    .answer-cell { max-width: 200px; }
-    .answer-item {
-      display: inline-block; background: rgba(255,255,255,0.05);
-      padding: 0.15rem 0.5rem; border-radius: 6px; margin: 0.1rem 0.2rem;
-      font-size: 0.78rem;
-    }
     .time-cell { color: #8888aa; white-space: nowrap; font-size: 0.8rem; }
 
-    /* pagination */
     .pagination {
       display: flex; justify-content: center; align-items: center;
       gap: 0.5rem; margin-top: 1.5rem;
@@ -103,14 +95,10 @@
     .page-btn:hover { border-color: #ffd700; }
     .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .page-btn.active { background: #ffd700; color: #0a0a1a; border-color: #ffd700; font-weight: 700; }
-    .page-info { font-size: 0.8rem; color: #8888aa; }
 
-    .empty {
-      text-align: center; padding: 3rem; color: #8888aa;
-    }
+    .empty { text-align: center; padding: 3rem; color: #8888aa; }
     .empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
 
-    /* detail modal */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.7);
       z-index: 100; display: none; align-items: center; justify-content: center;
@@ -136,13 +124,25 @@
     .detail-row:last-child { border-bottom: none; }
     .detail-q { font-size: 0.85rem; color: #8888aa; flex-shrink: 0; max-width: 200px; }
     .detail-a { font-size: 0.85rem; text-align: right; }
+
+    .toast {
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+      background: #7bed9f; color: #0a0a1a; padding: 0.7rem 1.5rem;
+      border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+      z-index: 200; opacity: 0; transition: all 0.3s; pointer-events: none;
+      box-shadow: 0 4px 20px rgba(123,237,159,0.4);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>📊 <span>问卷数据</span>后台</h1>
-      <button class="refresh-btn" onclick="loadAll()">🔄 刷新</button>
+      <div class="header-actions">
+        <button class="btn btn-export" onclick="exportAll()">📥 导出全部 .md</button>
+        <button class="btn" onclick="loadAll()">🔄 刷新</button>
+      </div>
     </div>
 
     <div class="stats-row" id="statsRow"></div>
@@ -151,10 +151,11 @@
     <div class="pagination" id="pagination"></div>
   </div>
 
-  <!-- detail modal -->
   <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
     <div class="modal" id="modalContent"></div>
   </div>
+
+  <div class="toast" id="toast"></div>
 
 <script>
 const PAGE_SIZE = 20;
@@ -203,38 +204,47 @@ const TYPE_COLORS = {
   '理性研究型': '#ffd700',
   '社交跟风型': '#a078ff',
 };
-const TYPE_EMOJI = {
-  '佛系躺平型': '🧘',
-  '知识焦虑型': '📚',
-  '追涨杀跌型': '🎢',
-  '理性研究型': '🔬',
-  '社交跟风型': '👥',
-};
 
-async function loadAll() {
-  await Promise.all([loadStats(), loadList()]);
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
+// ── resolve answer display ──
+function resolveAnswer(key, val) {
+  if (Array.isArray(val)) {
+    const opts = OPTION_MAP[key];
+    return val.map(v => opts ? opts[v] : v).join('、');
+  }
+  if (typeof val === 'number' && OPTION_MAP[key]) {
+    return OPTION_MAP[key][val] || String(val);
+  }
+  return String(val);
+}
+
+// ── load stats ──
 async function loadStats() {
   try {
     const data = await (await fetch('/api/stats')).json();
     const total = data.total;
 
-    // stats cards
+    const topEmoji = data.distribution.length > 0 ? data.distribution[0].personality.emoji : '-';
     document.getElementById('statsRow').innerHTML = `
       <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">总提交数</div></div>
       <div class="stat-card"><div class="stat-num">${data.distribution.length}</div><div class="stat-label">人格类型数</div></div>
-      <div class="stat-card"><div class="stat-num">${data.distribution[0] ? JSON.parse(data.distribution[0].personality).emoji : '-'}</div><div class="stat-label">最多类型</div></div>
+      <div class="stat-card"><div class="stat-num">${topEmoji}</div><div class="stat-label">最多类型</div></div>
     `;
 
-    // distribution bars
     const maxCount = Math.max(...data.distribution.map(d => d.count), 1);
     let barsHtml = '<h2>📈 人格分布</h2>';
     if (total === 0) {
       barsHtml += '<div style="color:#8888aa;text-align:center;padding:1rem">暂无数据</div>';
     } else {
       data.distribution.forEach(d => {
-        const p = JSON.parse(d.personality);
+        const p = d.personality;
         const color = TYPE_COLORS[p.name] || '#ffd700';
         const pct = (d.count / maxCount * 100);
         barsHtml += `
@@ -250,10 +260,12 @@ async function loadStats() {
     }
     document.getElementById('distSection').innerHTML = barsHtml;
   } catch (e) {
-    document.getElementById('statsRow').innerHTML = '<div style="color:#ff4757">加载统计失败</div>';
+    console.error('loadStats error:', e);
+    document.getElementById('statsRow').innerHTML = '<div style="color:#ff4757">加载统计失败：' + e.message + '</div>';
   }
 }
 
+// ── load list ──
 async function loadList(page) {
   if (page) currentPage = page;
   try {
@@ -293,7 +305,6 @@ async function loadList(page) {
         </table>
       </div>`;
 
-    // pagination
     let pagHtml = '';
     if (totalPages > 1) {
       pagHtml += `<button class="page-btn" onclick="loadList(${currentPage-1})" ${currentPage<=1?'disabled':''}>← 上一页</button>`;
@@ -305,46 +316,92 @@ async function loadList(page) {
     document.getElementById('pagination').innerHTML = pagHtml;
 
   } catch (e) {
-    document.getElementById('tableSection').innerHTML = '<h2>📋 提交记录</h2><div style="color:#ff4757">加载失败</div>';
+    console.error('loadList error:', e);
+    document.getElementById('tableSection').innerHTML = '<h2>📋 提交记录</h2><div style="color:#ff4757">加载失败：' + e.message + '</div>';
   }
 }
 
+// ── detail modal ──
 async function showDetail(id) {
   try {
     const data = await (await fetch(`/api/survey/${id}`)).json();
     const p = data.personality;
     const color = TYPE_COLORS[p.name] || '#ffd700';
 
-    let detailHtml = `
+    let html = `
       <button class="modal-close" onclick="closeModal()">✕</button>
       <h3>${p.emoji} ${p.name} · <span style="color:#8888aa;font-size:0.85rem">${data.created_at}</span></h3>
     `;
-
     for (const [key, val] of Object.entries(data.answers)) {
-      const label = Q_LABELS[key] || key;
-      let display = '';
-      if (Array.isArray(val)) {
-        const opts = OPTION_MAP[key];
-        display = val.map(v => `<span class="answer-item">${opts ? opts[v] : v}</span>`).join('');
-      } else if (typeof val === 'number' && OPTION_MAP[key]) {
-        display = OPTION_MAP[key][val] || val;
-      } else {
-        display = val;
-      }
-      detailHtml += `<div class="detail-row"><div class="detail-q">${label}</div><div class="detail-a">${display}</div></div>`;
+      html += `<div class="detail-row"><div class="detail-q">${Q_LABELS[key]||key}</div><div class="detail-a">${resolveAnswer(key, val)}</div></div>`;
     }
-
-    document.getElementById('modalContent').innerHTML = detailHtml;
+    document.getElementById('modalContent').innerHTML = html;
     document.getElementById('modal').classList.add('show');
   } catch (e) {
-    alert('加载详情失败');
+    alert('加载详情失败：' + e.message);
   }
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+// ── export all to .md ──
+async function exportAll() {
+  toast('正在生成 Markdown…');
+  try {
+    const fullData = await (await fetch('/api/surveys/all')).json();
+
+    if (fullData.length === 0) {
+      toast('没有数据可导出');
+      return;
+    }
+
+    // build markdown
+    let md = `# 「你是哪种投资人？」问卷数据导出\n\n`;
+    md += `> 导出时间：${new Date().toLocaleString('zh-CN')}\n`;
+    md += `> 总提交数：${fullData.length}\n\n`;
+
+    // summary table
+    md += `## 人格分布\n\n`;
+    md += `| 人格类型 | 数量 | 占比 |\n|---|---|---|\n`;
+    const counts = {};
+    fullData.forEach(d => { const n = d.personality.name; counts[n] = (counts[n]||0) + 1; });
+    Object.entries(counts).sort((a,b) => b[1]-a[1]).forEach(([name, count]) => {
+      const emoji = fullData.find(d => d.personality.name === name).personality.emoji;
+      md += `| ${emoji} ${name} | ${count} | ${(count/fullData.length*100).toFixed(1)}% |\n`;
+    });
+
+    // each submission
+    md += `\n---\n\n## 全部回答明细\n\n`;
+    fullData.forEach((d, i) => {
+      const p = d.personality;
+      md += `### #${i+1} ${p.emoji} ${p.name}\n\n`;
+      md += `- **提交时间**：${d.created_at}\n`;
+      md += `- **结果链接**：${location.origin}/r/${d.id}\n`;
+      for (const [key, val] of Object.entries(d.answers)) {
+        md += `- **${Q_LABELS[key]||key}**：${resolveAnswer(key, val)}\n`;
+      }
+      md += `\n`;
+    });
+
+    // download
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `survey-export-${new Date().toISOString().slice(0,10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast(`已导出 ${fullData.length} 条记录`);
+  } catch (e) {
+    console.error('export error:', e);
+    toast('导出失败：' + e.message);
+  }
 }
 
+// ── init ──
+async function loadAll() {
+  await Promise.all([loadStats(), loadList()]);
+}
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 loadAll();
 </script>

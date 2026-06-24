@@ -19,7 +19,6 @@ export default function Dashboard({ analysis, onRefresh, onSelectHolding }) {
           总 资 产
           <button className={styles.refreshBtn} onClick={onRefresh} title="刷新数据">↻</button>
         </div>
-        <div className={styles.totalValue}>¥ {((summary.total_fund_value_cny || 0) + (summary.total_stock_value_cny || 0)).toLocaleString()}</div>
         <div className={styles.breakdown}>
           <div className={styles.breakdownItem}>
             <div className={styles.breakdownLabel}>基金</div>
@@ -32,7 +31,7 @@ export default function Dashboard({ analysis, onRefresh, onSelectHolding }) {
           </div>
           <div className={styles.divider} />
           <div className={styles.breakdownItem}>
-            <div className={styles.breakdownLabel}>加密</div>
+            <div className={styles.breakdownLabel}>加密货币</div>
             <div className={styles.breakdownValue}>${(summary.total_crypto_value_usd || 0).toLocaleString()}</div>
           </div>
         </div>
